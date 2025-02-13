@@ -8,6 +8,8 @@ from typing import List, Dict, Optional
 from urllib.parse import urljoin
 from tqdm import tqdm
 
+DELAY = 0.2  # Delay between requests
+
 class NeurIPSScraper:
     def __init__(self, output_dir: str = 'data'):
         self.base_url = "https://papers.nips.cc"
@@ -140,7 +142,7 @@ class NeurIPSScraper:
                 pbar.set_postfix({"Processed": papers_processed})
                 
                 # Be nice to the server
-                time.sleep(1)
+                time.sleep(DELAY)
                 
             except Exception as e:
                 print(f"\nError processing paper: {str(e)}")
@@ -156,7 +158,7 @@ class NeurIPSScraper:
 
 # Usage example
 if __name__ == "__main__":
-    scraper = NeurIPSScraper(output_dir='neurips_data')
+    scraper = NeurIPSScraper(output_dir='dumps/neurips')
     
     # Scrape papers from recent years
     years_to_scrape = [2024, 2023, 2022]
