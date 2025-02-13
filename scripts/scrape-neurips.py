@@ -6,7 +6,6 @@ import time
 import re
 from typing import List, Dict, Optional
 from urllib.parse import urljoin
-from tqdm import tqdm
 
 class NeurIPSScraper:
     def __init__(self, output_dir: str = 'data'):
@@ -108,11 +107,8 @@ class NeurIPSScraper:
             print(f"No papers found for year {year}")
             return
 
-        papers = paper_list.find_all('li')
-        pbar = tqdm(total=len(papers), desc=f"Year {year}", unit="paper")
-        
         papers_processed = 0
-        for li in papers:
+        for li in paper_list.find_all('li'):
             try:
                 # Get paper link
                 paper_link = li.find('a')
@@ -136,23 +132,23 @@ class NeurIPSScraper:
                     ])
                 
                 papers_processed += 1
-                pbar.update(1)
-                pbar.set_postfix({"Processed": papers_processed})
+                if papers_processed % 10 == 0:
+                    print(f"Processed {papers_processed} papers...")
                 
                 # Be nice to the server
                 time.sleep(1)
                 
             except Exception as e:
-                print(f"\nError processing paper: {str(e)}")
+                print(f"Error processing paper: {str(e)}")
                 continue
-        
-        pbar.close()
-        print(f"\nCompleted year {year}, processed {papers_processed} papers")
+
+        print(f"Completed year {year}, processed {papers_processed} papers")
 
     def scrape_multiple_years(self, years: List[int]):
         """Scrape papers from multiple years"""
         for year in years:
             self.scrape_year(year)
+            print(f"Completed year {year}")
 
 # Usage example
 if __name__ == "__main__":
