@@ -21,15 +21,20 @@ class NeurIPSScraper:
         self.setup_csv_files()
         
     def setup_csv_files(self):
-        # Setup venues CSV
-        with open(self.output_dir / 'venues.csv', 'w', newline='', encoding='utf-8') as f:
-            writer = csv.writer(f)
-            writer.writerow(['name', 'abbrev', 'year', 'editors', 'isbn'])
-            
+       # Setup venues CSV
+        venues_path = self.output_dir / 'venues.csv'
+        if not venues_path.exists():  # Only write headers if file doesn't exist
+            with open(venues_path, 'w', newline='', encoding='utf-8') as f:
+                writer = csv.writer(f)
+                writer.writerow(['name', 'abbrev', 'year', 'editors', 'isbn'])
+
         # Setup papers CSV
-        with open(self.output_dir / 'papers.csv', 'w', newline='', encoding='utf-8') as f:
-            writer = csv.writer(f)
-            writer.writerow(['title', 'authors', 'abstract', 'venue_abbrev', 'venue_year', 'pdf_url', 'code_url'])
+        papers_path = self.output_dir / 'papers.csv'
+        if not papers_path.exists():  # Only write headers if file doesn't exist
+            with open(papers_path, 'w', newline='', encoding='utf-8') as f:
+                writer = csv.writer(f)
+                writer.writerow(['title', 'authors', 'abstract', 'venue_abbrev', 'venue_year', 'pdf_url', 'code_url'])
+
 
     def get_metadata_from_citation_tags(self, soup: BeautifulSoup) -> Dict:
         """Extract metadata from citation meta tags"""
