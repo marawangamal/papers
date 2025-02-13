@@ -8,7 +8,6 @@ import {
   Card,
   TextInput,
   Group,
-  Autocomplete,
   Box,
   Center,
   Select,
