@@ -11,45 +11,69 @@ import {
   Autocomplete,
   Box,
   Center,
+  Select,
 } from "@mantine/core";
-import usePapers from "./usePapers";
+import usePapers, { PaperSearchParams } from "./usePapers";
 import { IconBooks, IconSearch } from "@tabler/icons-react";
+import { Tables } from "@/types/database.types";
 
 export type PaperBrowserProps = {
-  searchParams: { invitation?: string; search?: string };
+  venues: Tables<"venues">[];
+  searchParams: PaperSearchParams;
 };
 
-export function PaperBrowser({ searchParams }: PaperBrowserProps) {
+export function PaperBrowser({ venues, searchParams }: PaperBrowserProps) {
   const {
     isFetching,
     error,
     notes,
-    conferences,
-    currentConference,
+    currentVenue,
     currentSearch,
     handleConferenceChange,
     handleSearchChange,
-  } = usePapers({ searchParams });
+  } = usePapers({ searchParams, venues });
 
   return (
     <Stack gap="xl" h="100%">
       <Group align="center">
-        <Autocomplete
+        <Select
           clearable
           label="Conference"
           placeholder="Choose a conference"
-          data={conferences.map(({ label }) => label)} // Only pass labels as data
-          value={currentConference || ""} // Use the label for value
-          onChange={(label) => {
-            // find matching conf.inviation
-            const value =
-              conferences.find((conf) => conf.label === label)?.invitation ||
-              "";
-            handleConferenceChange(value);
+          data={venues.map((v) => ({
+            value: v.id,
+            label: `${v.abbrev} ${v.year}`, // Fix: Proper template string usage
+          }))}
+          value={currentVenue?.id} // Ensure value is correctly set
+          onChange={(value) => {
+            // Find matching venue by its ID
+            const selectedVenue = venues.find((v) => v.id === value);
+            handleConferenceChange(selectedVenue?.id);
           }}
           leftSection={<IconBooks size={16} />}
           radius="md"
         />
+        {/* <Autocomplete
+          clearable
+          label="Conference"
+          placeholder="Choose a conference"
+          // data={venues.map(({ id }) => id)}
+          data={venues.map((v) => ({
+            value: v.id,
+            label: `${v.abbrev} ${v.year}`,
+          }))}
+          value={currentVenue?.id} // Use the label for value
+          // For autocomplete
+          // onChange={(label) => {
+          //   // find matching conf.inviation
+          //   const value = venues.find(
+          //     (v) => `${v.abbrev} ${v.year}` === label
+          //   )?.id;
+          //   handleConferenceChange(value);
+          // }}
+          leftSection={<IconBooks size={16} />}
+          radius="md"
+        /> */}
         <TextInput
           flex={1}
           label="Search term"
@@ -74,7 +98,7 @@ export function PaperBrowser({ searchParams }: PaperBrowserProps) {
           overflow: "auto",
         }}
       >
-        {!searchParams.invitation ? (
+        {!searchParams.venue_id ? (
           <Center h="100%">
             <Text>Select a conference to view papers</Text>
           </Center>
@@ -87,24 +111,21 @@ export function PaperBrowser({ searchParams }: PaperBrowserProps) {
             {notes.map((paper, index) => (
               <Card key={index} shadow="sm" padding="lg" radius="md" withBorder>
                 <Stack>
-                  <Title order={5}>
-                    {paper.content?.title.value || "Untitled"}
-                  </Title>
+                  <Title order={5}>{paper.title || "Untitled"}</Title>
 
                   <Text size="sm" c="dimmed">
-                    {paper.content?.authors?.value.join(", ") ||
-                      "No authors listed"}
+                    {paper.authors?.join(", ") || "No authors listed"}
                   </Text>
 
-                  {paper.content?.abstract && (
+                  {paper.abstract && (
                     <Text size="sm" lineClamp={3}>
-                      {paper.content.abstract.value}
+                      {paper.abstract}
                     </Text>
                   )}
 
-                  {paper.content?.pdf && (
+                  {paper.pdf_url && (
                     <Anchor
-                      href={`https://openreview.net/pdf?id=${paper.id}`}
+                      href={paper.pdf_url}
                       target="_blank"
                       rel="noopener noreferrer"
                       size="sm"

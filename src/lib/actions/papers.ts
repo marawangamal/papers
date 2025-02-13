@@ -1,47 +1,20 @@
 "use server";
 
-export type GetNotesParams = {
-  invitation?: string;
-};
+import { createClient } from "@/utils/supabase/server";
 
-export type Note = {
-  content: {
-    title: {
-      value: string;
-    };
-    authors?: {
-      value: string[];
-    };
-    abstract?: {
-      value: string;
-    };
-    pdf?: {
-      value: string;
-    };
-    paperhash: string;
-    venue?: string;
-    venueid?: string;
-  };
-  id: string;
-};
-
-export async function getNotes(params: GetNotesParams) {
-  const url = `https://api2.openreview.net/notes?${new URLSearchParams(
-    params
-  )}`;
-
-  // If no `invitation` is provided, return an empty array
-  if (!params.invitation) {
-    return [];
+// utils/supabase-server.ts
+export async function getPapers({
+  venue_id,
+}: {
+  venue_id: string;
+}) {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("papers")
+    .select("*")
+    .eq("venue_id", venue_id);
+  if (error) {
+    throw error;
   }
-
-  const response = await fetch(url, {
-    method: "GET",
-    headers: {},
-  });
-  const data = await response.json();
-  if (!response.ok) {
-    throw new Error(data.message);
-  }
-  return data["notes"] as Note[];
+  return data;
 }
