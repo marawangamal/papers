@@ -59,5 +59,9 @@ export async function getMatchingPapers(
   if (error) {
     throw error;
   }
+  // Log to search_logs table
+  await supabase.from("search_logs").insert({
+    search_query: JSON.stringify({ search, page, venue_id }),
+  });
   return data?.result;
 }
