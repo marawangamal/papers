@@ -4,19 +4,24 @@ import { useDebouncedValue } from "@mantine/hooks";
 import { Tables } from "@/types/database.types";
 import { getMatchingPapers, getPapers } from "@/lib/actions/papers";
 
-export type PaperBrowserSearchParams = { invitation?: string; search?: string };
-
-const filterPapers = (papers: Tables<"papers">[], search: string) => {
-  // Filter papers by search term
-  return papers.filter((paper) => {
-    return `${paper.title}${paper.abstract}`.toLowerCase()
-      .includes(search.toLowerCase());
-  });
+export type PaperBrowserSearchParams = {
+  invitation?: string;
+  search?: string;
+  page?: number;
 };
+
+// const filterPapers = (papers: Tables<"papers">[], search: string) => {
+//   // Filter papers by search term
+//   return papers.filter((paper) => {
+//     return `${paper.title}${paper.abstract}`.toLowerCase()
+//       .includes(search.toLowerCase());
+//   });
+// };
 
 export type PaperSearchParams = {
   venue_id?: string;
   search?: string;
+  page?: number;
 };
 
 export default function usePapers({
@@ -32,12 +37,12 @@ export default function usePapers({
   const [papers, setPapers] = useState<Tables<"papers">[]>([]);
   const [isFetching, startTransition] = useTransition();
 
-  const [debouncedSearch] = useDebouncedValue(searchParams.search, 5000);
-
   // Find the matching conference label for the current invitation
   const currentVenue = venues.find((conf) => conf.id === searchParams.venue_id);
   const currentSearch = searchParams.search || "";
   const filteredPapers = papers;
+  const page = searchParams.page || 1;
+  const [debouncedSearch] = useDebouncedValue(searchParams.search, 5000);
 
   const createQueryString = useCallback(
     (name: string, value: string) => {
@@ -72,23 +77,32 @@ export default function usePapers({
   /**
    * When the venue_id changes, fetch new papers
    */
+  // useEffect(() => {
+  //   startTransition(async () => {
+  //     try {
+  //       if (searchParams.venue_id) {
+  //         const fetchedPapers = await getPapers({
+  //           venue_id: searchParams.venue_id,
+  //         });
+  //         setPapers(fetchedPapers);
+  //       }
+  //     } catch (error: unknown) {
+  //       console.error(error);
+  //       setError(
+  //         error instanceof Error ? error.message : "Failed to load papers.",
+  //       );
+  //     }
+  //   });
+  // }, [searchParams.venue_id]);
+
+  // Set default params
   useEffect(() => {
-    startTransition(async () => {
-      try {
-        if (searchParams.venue_id) {
-          const fetchedPapers = await getPapers({
-            venue_id: searchParams.venue_id,
-          });
-          setPapers(fetchedPapers);
-        }
-      } catch (error: unknown) {
-        console.error(error);
-        setError(
-          error instanceof Error ? error.message : "Failed to load papers.",
-        );
-      }
-    });
-  }, [searchParams.venue_id]);
+    let defaultPath = pathname;
+    if (!searchParams.page) {
+      defaultPath += "?" + createQueryString("page", "1");
+    }
+    router.push(defaultPath);
+  }, []);
 
   /**
    * When the search term changes, filter papers
@@ -96,9 +110,11 @@ export default function usePapers({
   useEffect(() => {
     startTransition(async () => {
       try {
-        if (debouncedSearch) {
+        if (currentVenue) {
           const fetchedPapers = await getMatchingPapers({
             search: debouncedSearch,
+            page,
+            venue_id: currentVenue?.id || "",
           });
           setPapers(fetchedPapers);
         }
@@ -109,7 +125,7 @@ export default function usePapers({
         );
       }
     });
-  }, [debouncedSearch]); // Using debouncedSearch instead of searchParams.search
+  }, [debouncedSearch, page, currentVenue]);
 
   return {
     isFetching,

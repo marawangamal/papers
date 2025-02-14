@@ -19,13 +19,37 @@ export async function getPapers({
   return data;
 }
 
-export async function getMatchingPapers({ search }: { search: string }) {
+const PER_PAGE = 50;
+
+export async function getMatchingPapers(
+  { search, page, venue_id }: {
+    search?: string;
+    page: number;
+    venue_id: string;
+  },
+) {
   const supabase = await createClient();
+  if (!search) {
+    const { data, error } = await supabase
+      .from("papers")
+      .select("*")
+      .eq("venue_id", venue_id).range(
+        (page - 1) * PER_PAGE,
+        page * PER_PAGE - 1,
+      );
+    if (error) {
+      throw error;
+    }
+    return data;
+  }
   const { data, error } = await supabase.functions.invoke(
     "search",
     {
       body: {
         search,
+        page,
+        per_page: PER_PAGE,
+        venue_id,
       },
     },
   );

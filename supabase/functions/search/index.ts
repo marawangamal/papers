@@ -15,8 +15,16 @@ const supabase = createClient<Database>(
 
 const model = new Supabase.ai.Session("gte-small");
 
+type SearchParams = {
+  search: string;
+  page: number;
+  per_page: number;
+  venue_id?: string;
+  year?: number;
+};
+
 Deno.serve(async (req) => {
-  const { search } = await req.json();
+  const { search, venue_id, page, per_page }: SearchParams = await req.json();
   if (!search) return new Response("Please provide a search param!");
   // Generate embedding for search term.
   const embedding = await model.run(search, {
@@ -25,13 +33,23 @@ Deno.serve(async (req) => {
   });
 
   // Query embeddings.
-  const { data: result, error } = await supabase
+  let query = supabase
     .rpc("query_embeddings", {
       embedding: JSON.stringify(embedding),
       match_threshold: 0.8,
     })
-    .select("*")
-    .limit(10);
+    .select("*");
+
+  // Apply specific venue filter if provided
+  if (venue_id) {
+    query = query.eq("venue_id", venue_id);
+  }
+
+  // Apply pagination
+  query = query
+    .range((page - 1) * per_page, page * per_page - 1);
+
+  const { data: result, error } = await query;
   if (error) {
     return Response.json(error);
   }
