@@ -2,13 +2,13 @@ import { useCallback, useEffect, useState, useTransition } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useDebouncedValue } from "@mantine/hooks";
 import { Tables } from "@/types/database.types";
-import { getMatchingPapers } from "@/lib/actions/papers";
+import { getMatchingPapers, PaperSearchParams } from "@/lib/actions/papers";
 
-export type PaperBrowserSearchParams = {
-  invitation?: string;
-  search?: string;
-  page?: number;
-};
+// export type PaperBrowserSearchParams = {
+//   invitation?: string;
+//   search?: string;
+//   page?: number;
+// };
 
 // const filterPapers = (papers: Tables<"papers">[], search: string) => {
 //   // Filter papers by search term
@@ -17,12 +17,6 @@ export type PaperBrowserSearchParams = {
 //       .includes(search.toLowerCase());
 //   });
 // };
-
-export type PaperSearchParams = {
-  venue_id?: string;
-  search?: string;
-  page?: number;
-};
 
 export default function usePapers({
   venues,
@@ -36,13 +30,13 @@ export default function usePapers({
   const [error, setError] = useState<string | null>(null);
   const [papers, setPapers] = useState<Tables<"papers">[]>([]);
   const [isFetching, startTransition] = useTransition();
+  const [currentSearch, setCurrentSearch] = useState(searchParams.search || "");
+  const [debouncedSearch] = useDebouncedValue(currentSearch, 300); // 300ms delay
 
   // Find the matching conference label for the current invitation
   const currentVenue = venues.find((conf) => conf.id === searchParams.venue_id);
-  const currentSearch = searchParams.search || "";
   const filteredPapers = papers;
-  const page = searchParams.page || 1;
-  const [debouncedSearch] = useDebouncedValue(searchParams.search, 5000);
+  const page = searchParams.page || "1";
 
   const createQueryString = useCallback(
     (name: string, value: string) => {
@@ -68,11 +62,25 @@ export default function usePapers({
     } else router.push(pathname);
   };
 
-  const handleSearchChange = (value: string) => {
-    if (value) {
-      router.push(pathname + "?" + createQueryString("search", value));
-    } else router.push(pathname);
-  };
+  const handleSearchChange = useCallback((value: string) => {
+    setCurrentSearch(value);
+  }, []);
+
+  /**
+   * When `search` changes, update the URL
+   */
+  useEffect(() => {
+    const params = new URLSearchParams(
+      searchParams,
+    );
+    if (debouncedSearch) {
+      params.set("search", debouncedSearch);
+    } else {
+      params.delete("search");
+    }
+    router.push(`${pathname}?${params.toString()}`);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedSearch, pathname, router]);
 
   /**
    * When the venue_id changes, fetch new papers

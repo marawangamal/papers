@@ -12,9 +12,10 @@ import {
   Center,
   Select,
 } from "@mantine/core";
-import usePapers, { PaperSearchParams } from "./usePapers";
+import usePapers from "./usePapers";
 import { IconBooks, IconSearch } from "@tabler/icons-react";
 import { Tables } from "@/types/database.types";
+import { PaperSearchParams } from "@/lib/actions/papers";
 
 export type PaperBrowserProps = {
   venues: Tables<"venues">[];
@@ -52,27 +53,6 @@ export function PaperBrowser({ venues, searchParams }: PaperBrowserProps) {
           leftSection={<IconBooks size={16} />}
           radius="md"
         />
-        {/* <Autocomplete
-          clearable
-          label="Conference"
-          placeholder="Choose a conference"
-          // data={venues.map(({ id }) => id)}
-          data={venues.map((v) => ({
-            value: v.id,
-            label: `${v.abbrev} ${v.year}`,
-          }))}
-          value={currentVenue?.id} // Use the label for value
-          // For autocomplete
-          // onChange={(label) => {
-          //   // find matching conf.inviation
-          //   const value = venues.find(
-          //     (v) => `${v.abbrev} ${v.year}` === label
-          //   )?.id;
-          //   handleConferenceChange(value);
-          // }}
-          leftSection={<IconBooks size={16} />}
-          radius="md"
-        /> */}
         <TextInput
           flex={1}
           label="Search term"
