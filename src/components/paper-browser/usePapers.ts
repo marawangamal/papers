@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState, useTransition } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useDebouncedValue } from "@mantine/hooks";
 import { Tables } from "@/types/database.types";
-import { getMatchingPapers, getPapers } from "@/lib/actions/papers";
+import { getMatchingPapers } from "@/lib/actions/papers";
 
 export type PaperBrowserSearchParams = {
   invitation?: string;
