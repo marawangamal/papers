@@ -18,3 +18,19 @@ export async function getPapers({
   }
   return data;
 }
+
+export async function getMatchingPapers({ search }: { search: string }) {
+  const supabase = await createClient();
+  const { data, error } = await supabase.functions.invoke(
+    "search",
+    {
+      body: {
+        search,
+      },
+    },
+  );
+  if (error) {
+    throw error;
+  }
+  return data?.result;
+}

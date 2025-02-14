@@ -166,5 +166,5 @@ if __name__ == "__main__":
     scraper = NeurIPSScraper(output_dir='dumps/neurips')
     
     # Scrape papers from recent years
-    years_to_scrape = [2024, 2023, 2022]
+    years_to_scrape = [i for i in range(2021, 1988, -1)]
     scraper.scrape_multiple_years(years_to_scrape)
