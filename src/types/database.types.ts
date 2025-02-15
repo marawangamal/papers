@@ -7,6 +7,31 @@ export type Json =
   | Json[]
 
 export type Database = {
+  graphql_public: {
+    Tables: {
+      [_ in never]: never
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      graphql: {
+        Args: {
+          operationName?: string
+          query?: string
+          variables?: Json
+          extensions?: Json
+        }
+        Returns: Json
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
   public: {
     Tables: {
       papers: {
@@ -103,7 +128,38 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      vw_final_papers: {
+        Row: {
+          abbrev: string | null
+          abstract: string | null
+          abstract_embedding: string | null
+          authors: string[] | null
+          code_url: string | null
+          created_at: string | null
+          id: string | null
+          normalized_title: string | null
+          pdf_url: string | null
+          status: string | null
+          title: string | null
+          venue_id: string | null
+          year: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "papers_venue_id_fkey"
+            columns: ["venue_id"]
+            isOneToOne: false
+            referencedRelation: "venues"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      vw_final_venues: {
+        Row: {
+          abbrev: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       query_embeddings: {
@@ -231,3 +287,4 @@ export type CompositeTypes<
   : PublicCompositeTypeNameOrOptions extends keyof PublicSchema["CompositeTypes"]
     ? PublicSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
     : never
+

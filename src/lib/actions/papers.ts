@@ -23,24 +23,24 @@ export async function getPapers({
 const PER_PAGE = 50;
 
 export type PaperSearchParams = {
-  venue_ids: string[];
+  venue_abbrevs: string[]; // abbrev column
   search?: string;
   page?: string;
 };
 
 export async function getMatchingPapers(
-  { search, page, venue_ids }: PaperSearchParams,
+  { search, page, venue_abbrevs }: PaperSearchParams,
 ) {
   const pageInt = parseInt(page || "1", 10);
   const supabase = await createClient();
 
   if (!search) {
-    let query = supabase.from("papers").select("*").range(
+    let query = supabase.from("vw_final_papers").select("*").range(
       (pageInt - 1) * PER_PAGE,
       pageInt * PER_PAGE - 1,
     );
-    if (venue_ids && venue_ids.length > 0) {
-      query = query.in("venue_id", venue_ids);
+    if (venue_abbrevs && venue_abbrevs.length > 0) {
+      query = query.in("abbrev", venue_abbrevs);
     }
     const { data, error } = await query;
     if (error) {
@@ -55,7 +55,7 @@ export async function getMatchingPapers(
         search,
         page,
         per_page: PER_PAGE,
-        venue_ids,
+        venue_abbrevs,
       },
     },
   );
@@ -64,7 +64,7 @@ export async function getMatchingPapers(
   }
   // Log to search_logs table
   await supabase.from("search_logs").insert({
-    search_query: JSON.stringify({ search, page, venue_ids }),
+    search_query: JSON.stringify({ search, page, venue_abbrevs }),
   });
   return data?.result as Tables<"papers">[];
 }

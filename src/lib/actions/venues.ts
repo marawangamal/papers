@@ -6,7 +6,7 @@ import { createClient } from "@/utils/supabase/server";
 export async function getVenues() {
     const supabase = await createClient();
     const { data, error } = await supabase
-        .from("venues")
+        .from("vw_final_venues")
         .select("*");
     if (error) {
         throw error;

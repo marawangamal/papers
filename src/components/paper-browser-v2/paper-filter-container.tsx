@@ -15,20 +15,17 @@ export default function PaperFilterContainer({
   searchParams,
   isLoading,
 }: {
-  venues: Tables<"venues">[];
+  venues: Tables<"vw_final_venues">[];
   searchParams: PaperSearchParams;
   isLoading?: boolean;
 }) {
-  const { handleSearchClick } = usePapers({
-    searchParams,
-    venues,
-  });
+  const { handleSearchClick } = usePapers();
 
   return (
     <PaperFilters
       venues={venues}
       initialSearch={searchParams.search || ""}
-      initialVenues={getArr(searchParams.venue_ids)}
+      initialVenues={getArr(searchParams.venue_abbrevs)}
       onSearchClick={handleSearchClick}
       isLoading={isLoading}
     />

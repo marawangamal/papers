@@ -1,38 +1,26 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { Tables } from "@/types/database.types";
-import { PaperSearchParams } from "@/lib/actions/papers";
 
-export default function usePapers({
-  venues,
-  searchParams,
-}: {
-  venues: Tables<"venues">[];
-  searchParams: PaperSearchParams;
-}) {
+export default function usePapers() {
   const router = useRouter();
-  const selectedVenues = venues?.filter((venue) =>
-    searchParams.venue_ids?.includes(venue.id)
-  ).map((venue) => venue.id);
 
   const handleSearchClick = ({
     searchTerm,
-    venueIds,
-  }: { searchTerm?: string; venueIds?: string[] }) => {
+    venue_abbrevs,
+  }: { searchTerm?: string; venue_abbrevs?: string[] }) => {
     const id = Math.random().toString(36).substring(7);
     const base = `/search/${id}`;
     const params = new Array<string>();
     if (searchTerm) {
       params.push(`search=${searchTerm}`);
     }
-    if (venueIds) {
-      venueIds.forEach((id) => params.push(`venue_ids=${id}`));
+    if (venue_abbrevs) {
+      venue_abbrevs.forEach((a) => params.push(`venue_abbrevs=${a}`));
     }
     router.push(base + "?" + params.join("&"));
   };
 
   return {
-    selectedVenues,
     handleSearchClick,
   };
 }

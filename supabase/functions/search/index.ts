@@ -18,13 +18,13 @@ type SearchParams = {
   search: string;
   page: number;
   per_page: number;
-  venue_ids?: string[];
+  venue_abbrevs?: string[];
   year_min?: number;
   year_max?: number;
 };
 
 Deno.serve(async (req) => {
-  const { search, venue_ids, year_min, year_max, page, per_page }:
+  const { search, venue_abbrevs, year_min, year_max, page, per_page }:
     SearchParams = await req.json();
 
   if (!search) return new Response("Please provide a search param!");
@@ -35,6 +35,16 @@ Deno.serve(async (req) => {
     normalize: true,
   });
 
+  // Get matching venue_ids
+  const { data: venues, error: venueError } = await supabase
+    .from("venues")
+    .select("id")
+    .in("abbrev", venue_abbrevs);
+
+  if (venueError) {
+    return Response.json(venueError);
+  }
+
   // Query embeddings.
   let query = supabase
     .rpc("query_embeddings", {
@@ -44,8 +54,8 @@ Deno.serve(async (req) => {
     .select("*");
 
   // Apply venue filter if provided
-  if (venue_ids && venue_ids.length > 0) {
-    query = query.in("venue_id", venue_ids);
+  if (venues && venues.length > 0) {
+    query = query.in("venue_id", venues.map((v) => v.id));
   }
 
   // Apply year range filters if provided

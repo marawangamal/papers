@@ -15,16 +15,16 @@ import { Tables } from "@/types/database.types";
 import { useState, useMemo } from "react";
 
 type PaperFiltersProps = {
-  venues: Tables<"venues">[];
+  venues: Tables<"vw_final_venues">[];
   initialSearch?: string;
   initialVenues?: string[];
   isLoading?: boolean;
   onSearchClick?: ({
     searchTerm,
-    venueIds,
+    venue_abbrevs,
   }: {
     searchTerm?: string;
-    venueIds?: string[];
+    venue_abbrevs?: string[];
   }) => void;
 };
 
@@ -36,28 +36,23 @@ export function PaperFilters({
   onSearchClick,
 }: PaperFiltersProps) {
   const [searchTerm, setSearchTerm] = useState(initialSearch);
-  const [venueIds, setVenueIds] = useState(initialVenues);
+  const [selectedVenues, setSelectedVenues] = useState(initialVenues);
   const [opened, setOpened] = useState(false);
 
   const isDirty = useMemo(() => {
     const searchChanged = searchTerm !== initialSearch;
     const venuesChanged =
-      venueIds.length !== initialVenues.length ||
-      venueIds.some((id) => !initialVenues.includes(id)) ||
-      initialVenues.some((id) => !venueIds.includes(id));
+      selectedVenues.length !== initialVenues.length ||
+      selectedVenues.some((id) => !initialVenues.includes(id)) ||
+      initialVenues.some((id) => !selectedVenues.includes(id));
     return searchChanged || venuesChanged;
-  }, [searchTerm, venueIds, initialSearch, initialVenues]);
+  }, [searchTerm, selectedVenues, initialSearch, initialVenues]);
 
-  const venueOptions = venues.map((v) => ({
-    value: v.id,
-    label: `${v.abbrev} ${v.year}`,
-  }));
-
-  const activeFiltersCount = venueIds.length > 0 ? 1 : 0;
+  const activeFiltersCount = selectedVenues.length > 0 ? 1 : 0;
 
   const handleSearch = () => {
     if (isDirty && onSearchClick) {
-      onSearchClick({ searchTerm, venueIds });
+      onSearchClick({ searchTerm, venue_abbrevs: selectedVenues });
     }
     setOpened(false); // Close popover after applying filters
   };
@@ -102,9 +97,9 @@ export function PaperFilters({
               <CloseButton onClick={() => setOpened(false)} />
             </Group>
             <MultiSelect
-              data={venueOptions}
-              value={venueIds}
-              onChange={setVenueIds}
+              data={venues.map((venue) => venue.abbrev as string)}
+              value={selectedVenues}
+              onChange={setSelectedVenues}
               placeholder="Select venues"
               description="Filter by conference"
               searchable
