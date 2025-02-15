@@ -26,10 +26,12 @@ export type PaperSearchParams = {
   venue_abbrevs: string[]; // abbrev column
   search?: string;
   page?: string;
+  year_min?: string;
+  year_max?: string;
 };
 
 export async function getMatchingPapers(
-  { search, page, venue_abbrevs }: PaperSearchParams,
+  { search, page, venue_abbrevs, year_max, year_min }: PaperSearchParams,
 ) {
   const pageInt = parseInt(page || "1", 10);
   const supabase = await createClient();
@@ -42,6 +44,14 @@ export async function getMatchingPapers(
     if (venue_abbrevs && venue_abbrevs.length > 0) {
       query = query.in("abbrev", venue_abbrevs);
     }
+
+    if (year_min) {
+      query = query.gte("year", year_min);
+    }
+    if (year_max) {
+      query = query.lte("year", year_max);
+    }
+
     const { data, error } = await query;
     if (error) {
       throw error;
@@ -56,6 +66,8 @@ export async function getMatchingPapers(
         page,
         per_page: PER_PAGE,
         venue_abbrevs,
+        year_min,
+        year_max,
       },
     },
   );
@@ -66,5 +78,5 @@ export async function getMatchingPapers(
   await supabase.from("search_logs").insert({
     search_query: JSON.stringify({ search, page, venue_abbrevs }),
   });
-  return data?.result as Tables<"papers">[];
+  return data?.result as Tables<"vw_final_papers">[];
 }

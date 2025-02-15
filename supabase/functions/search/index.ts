@@ -35,16 +35,6 @@ Deno.serve(async (req) => {
     normalize: true,
   });
 
-  // Get matching venue_ids
-  const { data: venues, error: venueError } = await supabase
-    .from("venues")
-    .select("id")
-    .in("abbrev", venue_abbrevs);
-
-  if (venueError) {
-    return Response.json(venueError);
-  }
-
   // Query embeddings.
   let query = supabase
     .rpc("query_embeddings", {
@@ -54,8 +44,8 @@ Deno.serve(async (req) => {
     .select("*");
 
   // Apply venue filter if provided
-  if (venues && venues.length > 0) {
-    query = query.in("venue_id", venues.map((v) => v.id));
+  if (venue_abbrevs && venue_abbrevs.length > 0) {
+    query = query.in("abbrevs", venue_abbrevs);
   }
 
   // Apply year range filters if provided

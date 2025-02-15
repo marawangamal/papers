@@ -9,6 +9,7 @@ import {
   Title,
   CloseButton,
   Badge,
+  NumberInput,
 } from "@mantine/core";
 import { IconBooks, IconSearch, IconFilter } from "@tabler/icons-react";
 import { Tables } from "@/types/database.types";
@@ -18,25 +19,32 @@ type PaperFiltersProps = {
   venues: Tables<"vw_final_venues">[];
   initialSearch?: string;
   initialVenues?: string[];
+  initialYearRange?: { start?: number; end?: number };
   isLoading?: boolean;
   onSearchClick?: ({
     searchTerm,
     venue_abbrevs,
+    yearRange,
   }: {
     searchTerm?: string;
     venue_abbrevs?: string[];
+    yearRange?: { start?: number; end?: number };
   }) => void;
 };
+
+const currentYear = new Date().getFullYear();
 
 export function PaperFilters({
   venues,
   initialSearch = "",
   initialVenues = [],
+  initialYearRange = {},
   isLoading,
   onSearchClick,
 }: PaperFiltersProps) {
   const [searchTerm, setSearchTerm] = useState(initialSearch);
   const [selectedVenues, setSelectedVenues] = useState(initialVenues);
+  const [yearRange, setYearRange] = useState(initialYearRange);
   const [opened, setOpened] = useState(false);
 
   const isDirty = useMemo(() => {
@@ -45,16 +53,31 @@ export function PaperFilters({
       selectedVenues.length !== initialVenues.length ||
       selectedVenues.some((id) => !initialVenues.includes(id)) ||
       initialVenues.some((id) => !selectedVenues.includes(id));
-    return searchChanged || venuesChanged;
-  }, [searchTerm, selectedVenues, initialSearch, initialVenues]);
+    const yearRangeChanged =
+      yearRange.start !== initialYearRange.start ||
+      yearRange.end !== initialYearRange.end;
+    return searchChanged || venuesChanged || yearRangeChanged;
+  }, [
+    searchTerm,
+    selectedVenues,
+    yearRange,
+    initialSearch,
+    initialVenues,
+    initialYearRange,
+  ]);
 
-  const activeFiltersCount = selectedVenues.length > 0 ? 1 : 0;
+  const activeFiltersCount = useMemo(() => {
+    let count = 0;
+    if (selectedVenues.length > 0) count++;
+    if (yearRange.start || yearRange.end) count++;
+    return count;
+  }, [selectedVenues.length, yearRange]);
 
   const handleSearch = () => {
     if (isDirty && onSearchClick) {
-      onSearchClick({ searchTerm, venue_abbrevs: selectedVenues });
+      onSearchClick({ searchTerm, venue_abbrevs: selectedVenues, yearRange });
     }
-    setOpened(false); // Close popover after applying filters
+    setOpened(false);
   };
 
   const handleKeyPress = (event: React.KeyboardEvent) => {
@@ -106,6 +129,39 @@ export function PaperFilters({
               clearable
               disabled={isLoading}
             />
+            <Stack gap="xs">
+              <Title order={6}>Year Range</Title>
+              <Group grow>
+                <NumberInput
+                  placeholder="From year"
+                  value={yearRange.start}
+                  onChange={(value) =>
+                    setYearRange((prev) => ({
+                      ...prev,
+                      start: value || undefined,
+                    }))
+                  }
+                  min={1900}
+                  max={currentYear}
+                  disabled={isLoading}
+                  clearable
+                />
+                <NumberInput
+                  placeholder="To year"
+                  value={yearRange.end}
+                  onChange={(value) =>
+                    setYearRange((prev) => ({
+                      ...prev,
+                      end: value || undefined,
+                    }))
+                  }
+                  min={1900}
+                  max={currentYear}
+                  disabled={isLoading}
+                  clearable
+                />
+              </Group>
+            </Stack>
             <Button onClick={handleSearch} disabled={!isDirty}>
               Apply filters
             </Button>

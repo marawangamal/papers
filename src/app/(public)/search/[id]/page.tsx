@@ -56,8 +56,10 @@ async function PageContent({
 }) {
   const papers = await getMatchingPapers({
     search: searchParams.search,
-    venue_ids: getStringList(searchParams.venue_ids),
+    venue_abbrevs: getStringList(searchParams.venue_abbrevs),
     page: searchParams.page || "1",
+    year_min: searchParams.year_min,
+    year_max: searchParams.year_max,
   });
 
   return (

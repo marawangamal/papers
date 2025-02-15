@@ -6,7 +6,7 @@ import { PaperSearchParams } from "@/lib/actions/papers";
 
 export type PaperBrowserProps = {
   venues: Tables<"venues">[];
-  papers: Tables<"papers">[];
+  papers: Tables<"vw_final_papers">[];
   searchParams: PaperSearchParams;
 };
 
