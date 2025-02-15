@@ -1,0 +1,76 @@
+// ConferencePapers.tsx
+"use client";
+import { Title, Text, Stack, Anchor, Card, Box } from "@mantine/core";
+import { PaperFilters } from "./filter";
+import usePapers from "./usePapers";
+import { Tables } from "@/types/database.types";
+import { PaperSearchParams } from "@/lib/actions/papers";
+
+export type PaperBrowserProps = {
+  venues: Tables<"venues">[];
+  papers: Tables<"papers">[];
+  searchParams: PaperSearchParams;
+};
+
+export function PaperBrowser({
+  venues,
+  papers,
+  searchParams,
+}: PaperBrowserProps) {
+  const { selectedVenues, handleVenuesChange, handleSearchClick } = usePapers({
+    searchParams,
+    venues,
+  });
+
+  return (
+    <Stack gap="xl" h="100%">
+      <PaperFilters
+        venues={venues}
+        initialSearch={searchParams.search || ""}
+        selectedVenues={selectedVenues}
+        onVenueChange={handleVenuesChange}
+        onSearchClick={handleSearchClick}
+      />
+
+      <Box
+        style={{
+          flex: 1,
+          minHeight: 0,
+          overflow: "auto",
+        }}
+      >
+        {papers.length > 0 ? (
+          <Stack gap="md">
+            {papers.map((paper, index) => (
+              <Card key={index} shadow="sm" padding="lg" radius="md" withBorder>
+                <Stack>
+                  <Title order={5}>{paper.title || "Untitled"}</Title>
+                  <Text size="sm" c="dimmed">
+                    {paper.authors?.join(", ") || "No authors listed"}
+                  </Text>
+                  {paper.abstract && (
+                    <Text size="sm" lineClamp={3}>
+                      {paper.abstract}
+                    </Text>
+                  )}
+                  {paper.pdf_url && (
+                    <Anchor
+                      href={paper.pdf_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      size="sm"
+                    >
+                      View PDF
+                    </Anchor>
+                  )}
+                </Stack>
+              </Card>
+            ))}
+          </Stack>
+        ) : (
+          <Text>No papers found</Text>
+        )}
+      </Box>
+    </Stack>
+  );
+}
