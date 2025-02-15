@@ -1,8 +1,6 @@
 // ConferencePapers.tsx
 "use client";
 import { Title, Text, Stack, Anchor, Card, Box } from "@mantine/core";
-import { PaperFilters } from "./filter";
-import usePapers from "./usePapers";
 import { Tables } from "@/types/database.types";
 import { PaperSearchParams } from "@/lib/actions/papers";
 
@@ -12,26 +10,9 @@ export type PaperBrowserProps = {
   searchParams: PaperSearchParams;
 };
 
-export function PaperBrowser({
-  venues,
-  papers,
-  searchParams,
-}: PaperBrowserProps) {
-  const { selectedVenues, handleVenuesChange, handleSearchClick } = usePapers({
-    searchParams,
-    venues,
-  });
-
+export function PaperBrowser({ papers }: PaperBrowserProps) {
   return (
     <Stack gap="xl" h="100%">
-      <PaperFilters
-        venues={venues}
-        initialSearch={searchParams.search || ""}
-        selectedVenues={selectedVenues}
-        onVenueChange={handleVenuesChange}
-        onSearchClick={handleSearchClick}
-      />
-
       <Box
         style={{
           flex: 1,

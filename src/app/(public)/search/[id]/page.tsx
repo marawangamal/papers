@@ -2,6 +2,8 @@ import { PaperBrowserProps } from "@/components/paper-browser";
 import { getMatchingPapers } from "@/lib/actions/papers";
 import { getVenues } from "@/lib/actions/venues";
 import { PaperBrowser } from "@/components/paper-browser-v2";
+import { Stack } from "@mantine/core";
+import PaperFilterContainer from "@/components/paper-browser-v2/paper-filter-container";
 
 const getStringList = (value?: string | string[] | undefined) => {
   if (!value) return [];
@@ -25,10 +27,16 @@ export default async function Page({
 
   const venues = await getVenues();
   return (
-    <PaperBrowser
-      venues={venues}
-      papers={papers}
-      searchParams={awaitedSearchParams}
-    />
+    <Stack>
+      <PaperFilterContainer
+        venues={venues}
+        searchParams={awaitedSearchParams}
+      />
+      <PaperBrowser
+        venues={venues}
+        papers={papers}
+        searchParams={awaitedSearchParams}
+      />
+    </Stack>
   );
 }
