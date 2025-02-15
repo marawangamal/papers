@@ -130,5 +130,8 @@ export default function usePapers({
     currentSearch,
     handleConferenceChange: handleVenueChange,
     handleSearchChange,
+    // New
+    selectedVenues: searchParams.venue_id ? [searchParams.venue_id] : [],
+    handleVenuesChange: (venues: string[]) => handleVenueChange(venues[0]),
   };
 }

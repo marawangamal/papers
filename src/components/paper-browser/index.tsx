@@ -1,19 +1,8 @@
 // ConferencePapers.tsx
 "use client";
-import {
-  Title,
-  Text,
-  Stack,
-  Anchor,
-  Card,
-  TextInput,
-  Group,
-  Box,
-  Center,
-  Select,
-} from "@mantine/core";
+import { Title, Text, Stack, Anchor, Card, Box, Center } from "@mantine/core";
+import { PaperFilters } from "./filter";
 import usePapers from "./usePapers";
-import { IconBooks, IconSearch } from "@tabler/icons-react";
 import { Tables } from "@/types/database.types";
 import { PaperSearchParams } from "@/lib/actions/papers";
 
@@ -27,43 +16,21 @@ export function PaperBrowser({ venues, searchParams }: PaperBrowserProps) {
     isFetching,
     error,
     notes,
-    currentVenue,
+    selectedVenues,
     currentSearch,
-    handleConferenceChange,
+    handleVenuesChange,
     handleSearchChange,
   } = usePapers({ searchParams, venues });
 
   return (
     <Stack gap="xl" h="100%">
-      <Group align="center">
-        <Select
-          searchable
-          clearable
-          label="Conference"
-          placeholder="Choose a conference"
-          data={venues.map((v) => ({
-            value: v.id,
-            label: `${v.abbrev} ${v.year}`, // Fix: Proper template string usage
-          }))}
-          value={currentVenue?.id} // Ensure value is correctly set
-          onChange={(value) => {
-            // Find matching venue by its ID
-            const selectedVenue = venues.find((v) => v.id === value);
-            handleConferenceChange(selectedVenue?.id);
-          }}
-          leftSection={<IconBooks size={16} />}
-          radius="md"
-        />
-        <TextInput
-          flex={1}
-          label="Search term"
-          placeholder="Search for papers"
-          onChange={(event) => handleSearchChange(event.currentTarget.value)}
-          value={currentSearch}
-          leftSection={<IconSearch size={16} />}
-          radius="md"
-        />
-      </Group>
+      <PaperFilters
+        venues={venues}
+        selectedVenues={selectedVenues}
+        searchTerm={currentSearch}
+        onVenueChange={handleVenuesChange}
+        onSearchChange={handleSearchChange}
+      />
 
       {error && (
         <Text size="sm" c="red">
@@ -74,35 +41,32 @@ export function PaperBrowser({ venues, searchParams }: PaperBrowserProps) {
       <Box
         style={{
           flex: 1,
-          minHeight: 0, // Critical for nested flex containers
+          minHeight: 0,
           overflow: "auto",
         }}
       >
-        {!searchParams.venue_id ? (
+        {selectedVenues.length === 0 ? (
           <Center h="100%">
-            <Text>Select a conference to view papers</Text>
+            <Text>Select at least one conference to view papers</Text>
           </Center>
         ) : isFetching ? (
           <Center h="100%">
             <Text>Loading...</Text>
           </Center>
         ) : notes.length > 0 ? (
-          <Stack gap={"md"}>
+          <Stack gap="md">
             {notes.map((paper, index) => (
               <Card key={index} shadow="sm" padding="lg" radius="md" withBorder>
                 <Stack>
                   <Title order={5}>{paper.title || "Untitled"}</Title>
-
                   <Text size="sm" c="dimmed">
                     {paper.authors?.join(", ") || "No authors listed"}
                   </Text>
-
                   {paper.abstract && (
                     <Text size="sm" lineClamp={3}>
                       {paper.abstract}
                     </Text>
                   )}
-
                   {paper.pdf_url && (
                     <Anchor
                       href={paper.pdf_url}
