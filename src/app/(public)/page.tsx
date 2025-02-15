@@ -1,21 +1,9 @@
-import React from "react";
-import { Stack, Box } from "@mantine/core";
-import { PaperBrowser, PaperBrowserProps } from "@/components/paper-browser";
-import { getVenues } from "@/lib/actions/venues";
+import { redirect } from "next/navigation";
 
-export default async function Page({
-  searchParams,
-}: {
-  searchParams: Promise<PaperBrowserProps["searchParams"]>;
-}) {
-  const awaitedSearchParams = await searchParams;
-  const venues = await getVenues();
-  return (
-    <Stack h="100%" justify="space-between">
-      <Box flex={1} style={{ overflowY: "hidden" }}>
-        {/* Note how many results */}
-        {/* <PaperBrowser venues={venues} searchParams={awaitedSearchParams} /> */}
-      </Box>
-    </Stack>
-  );
+export default function Page() {
+  // Generate random number between 1000 and 9999
+  const randomNumber = Math.floor(Math.random() * 9000) + 1000;
+
+  // Redirect to search page with random number
+  redirect(`/search/${randomNumber}`);
 }

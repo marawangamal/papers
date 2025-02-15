@@ -1,7 +1,6 @@
-import { PaperBrowserProps } from "@/components/paper-browser";
 import { getMatchingPapers } from "@/lib/actions/papers";
 import { getVenues } from "@/lib/actions/venues";
-import { PaperBrowser } from "@/components/paper-browser-v2";
+import { PaperBrowser, PaperBrowserProps } from "@/components/paper-browser-v2";
 import { Card, Skeleton, Stack } from "@mantine/core";
 import PaperFilterContainer from "@/components/paper-browser-v2/paper-filter-container";
 import { Suspense } from "react";
