@@ -212,6 +212,3 @@ grant truncate on table "public"."venues" to "service_role";
 
 grant update on table "public"."venues" to "service_role";
 
-CREATE TRIGGER on_inserted_or_updated_embedding AFTER INSERT OR UPDATE ON public.papers FOR EACH ROW EXECUTE FUNCTION supabase_functions.http_request('https://lefxunysqgutdrvutpdb.supabase.co/functions/v1/generate-embedding', 'POST', '{"Content-type":"application/json","Authorization":"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxlZnh1bnlzcWd1dGRydnV0cGRiIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTczOTQ1MjgyMSwiZXhwIjoyMDU1MDI4ODIxfQ.nkpe59HD-sdCS1K4Z69Dek4jcytrjsSgfbpaQ--gQYA"}', '{}', '5000');
-
-
