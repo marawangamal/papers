@@ -14,7 +14,7 @@ export default async function Page({
     <Stack h="100%" justify="space-between">
       <Box flex={1} style={{ overflowY: "hidden" }}>
         {/* Note how many results */}
-        <PaperBrowser venues={venues} searchParams={awaitedSearchParams} />
+        {/* <PaperBrowser venues={venues} searchParams={awaitedSearchParams} /> */}
       </Box>
     </Stack>
   );
