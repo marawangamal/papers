@@ -45,7 +45,7 @@ Deno.serve(async (req) => {
 
   // Apply venue filter if provided
   if (venue_abbrevs && venue_abbrevs.length > 0) {
-    query = query.in("abbrevs", venue_abbrevs);
+    query = query.in("abbrev", venue_abbrevs);
   }
 
   // Apply year range filters if provided

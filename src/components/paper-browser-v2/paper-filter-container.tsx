@@ -27,7 +27,9 @@ export default function PaperFilterContainer({
       initialSearch={searchParams.search || ""}
       initialVenues={getArr(searchParams.venue_abbrevs)}
       initialYearRange={{
-        start: parseInt(searchParams.year_min || "2020", 10),
+        start: searchParams.year_min
+          ? parseInt(searchParams.year_min, 10)
+          : undefined,
         end: searchParams.year_max
           ? parseInt(searchParams.year_max, 10)
           : undefined,

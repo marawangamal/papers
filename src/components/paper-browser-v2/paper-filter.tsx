@@ -10,8 +10,9 @@ import {
   CloseButton,
   Badge,
   NumberInput,
+  Text,
 } from "@mantine/core";
-import { IconBooks, IconSearch, IconFilter } from "@tabler/icons-react";
+import { IconBooks, IconSearch, IconFilter, IconX } from "@tabler/icons-react";
 import { Tables } from "@/types/database.types";
 import { useState, useMemo } from "react";
 
@@ -119,52 +120,71 @@ export function PaperFilters({
               <Title order={5}>Apply filters</Title>
               <CloseButton onClick={() => setOpened(false)} />
             </Group>
-            <MultiSelect
-              data={venues.map((venue) => venue.abbrev as string)}
-              value={selectedVenues}
-              onChange={setSelectedVenues}
-              placeholder="Select venues"
-              description="Filter by conference"
-              searchable
-              clearable
-              disabled={isLoading}
-            />
             <Stack gap="xs">
-              <Title order={6}>Year Range</Title>
-              <Group grow>
-                <NumberInput
-                  placeholder="From year"
-                  value={yearRange.start}
-                  onChange={(value) =>
-                    setYearRange((prev) => ({
-                      ...prev,
-                      start: value || undefined,
-                    }))
-                  }
-                  min={1900}
-                  max={currentYear}
-                  disabled={isLoading}
-                  clearable
-                />
-                <NumberInput
-                  placeholder="To year"
-                  value={yearRange.end}
-                  onChange={(value) =>
-                    setYearRange((prev) => ({
-                      ...prev,
-                      end: value || undefined,
-                    }))
-                  }
-                  min={1900}
-                  max={currentYear}
-                  disabled={isLoading}
-                  clearable
-                />
-              </Group>
+              <Text size="sm" c="dimmed">
+                Filter by conference
+              </Text>
+              <MultiSelect
+                data={venues.map((venue) => venue.abbrev as string)}
+                value={selectedVenues}
+                onChange={setSelectedVenues}
+                placeholder="Select venues"
+                // description="Filter by conference"
+                searchable
+                clearable
+                disabled={isLoading}
+              />
             </Stack>
-            <Button onClick={handleSearch} disabled={!isDirty}>
-              Apply filters
-            </Button>
+            <Stack gap="xs">
+              <Stack gap="xs">
+                <Text size="sm" c="dimmed">
+                  Filter by year
+                </Text>
+                <Group grow>
+                  <NumberInput
+                    placeholder="From year"
+                    value={yearRange.start}
+                    onChange={(value) =>
+                      setYearRange((prev) => ({
+                        ...prev,
+                        start: typeof value === "number" ? value : undefined,
+                      }))
+                    }
+                    min={1900}
+                    max={currentYear}
+                    disabled={isLoading}
+                  />
+                  <NumberInput
+                    placeholder="To year"
+                    value={yearRange.end}
+                    onChange={(value) =>
+                      setYearRange((prev) => ({
+                        ...prev,
+                        end: typeof value === "number" ? value : undefined,
+                      }))
+                    }
+                    min={1900}
+                    max={currentYear}
+                    disabled={isLoading}
+                  />
+                </Group>
+              </Stack>
+            </Stack>
+            <Group justify="flex-end">
+              <Button
+                onClick={() => {
+                  setSelectedVenues([]);
+                  setYearRange({});
+                }}
+                variant="outline"
+                leftSection={<IconX size={18} />}
+              >
+                Clear
+              </Button>
+              <Button onClick={handleSearch} disabled={!isDirty}>
+                Apply filters
+              </Button>
+            </Group>
           </Stack>
         </Popover.Dropdown>
       </Popover>
