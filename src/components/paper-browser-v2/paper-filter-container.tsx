@@ -5,6 +5,11 @@ import { PaperFilters } from "./paper-filter";
 import { Tables } from "@/types/database.types";
 import { PaperSearchParams } from "@/lib/actions/papers";
 
+const getArr = (value?: string | string[] | undefined) => {
+  if (!value) return [];
+  return typeof value === "string" ? [value] : value;
+};
+
 export default function PaperFilterContainer({
   venues,
   searchParams,
@@ -14,7 +19,7 @@ export default function PaperFilterContainer({
   searchParams: PaperSearchParams;
   isLoading?: boolean;
 }) {
-  const { selectedVenues, handleVenuesChange, handleSearchClick } = usePapers({
+  const { handleSearchClick } = usePapers({
     searchParams,
     venues,
   });
@@ -23,8 +28,7 @@ export default function PaperFilterContainer({
     <PaperFilters
       venues={venues}
       initialSearch={searchParams.search || ""}
-      selectedVenues={selectedVenues}
-      onVenueChange={handleVenuesChange}
+      initialVenues={getArr(searchParams.venue_ids)}
       onSearchClick={handleSearchClick}
       isLoading={isLoading}
     />

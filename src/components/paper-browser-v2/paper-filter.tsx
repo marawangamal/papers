@@ -1,4 +1,3 @@
-// PaperFilters.tsx
 "use client";
 import {
   MultiSelect,
@@ -13,32 +12,67 @@ import {
 } from "@mantine/core";
 import { IconBooks, IconSearch, IconFilter } from "@tabler/icons-react";
 import { Tables } from "@/types/database.types";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 
 type PaperFiltersProps = {
   venues: Tables<"venues">[];
-  selectedVenues: string[];
   initialSearch?: string;
-  onVenueChange?: (venues: string[]) => void;
-  onSearchClick?: (search: string) => void;
+  initialVenues?: string[];
   isLoading?: boolean;
+  onSearchClick?: ({
+    searchTerm,
+    venueIds,
+  }: {
+    searchTerm?: string;
+    venueIds?: string[];
+  }) => void;
 };
 
 export function PaperFilters({
   venues,
-  initialSearch,
-  selectedVenues,
-  onVenueChange,
-  onSearchClick,
+  initialSearch = "",
+  initialVenues = [],
   isLoading,
+  onSearchClick,
 }: PaperFiltersProps) {
-  const [searchTerm, setSearchTerm] = useState(initialSearch || "");
+  const [searchTerm, setSearchTerm] = useState(initialSearch);
+  const [venueIds, setVenueIds] = useState(initialVenues);
   const [opened, setOpened] = useState(false);
+
+  // Check if current values are different from initial values
+  const isDirty = useMemo(() => {
+    const searchChanged = searchTerm !== initialSearch;
+    const venuesChanged =
+      venueIds.length !== initialVenues.length ||
+      venueIds.some((id) => !initialVenues.includes(id)) ||
+      initialVenues.some((id) => !venueIds.includes(id));
+    return searchChanged || venuesChanged;
+  }, [searchTerm, venueIds, initialSearch, initialVenues]);
+
   const venueOptions = venues.map((v) => ({
     value: v.id,
     label: `${v.abbrev} ${v.year}`,
   }));
-  const activeFiltersCount = selectedVenues.length > 0 ? 1 : 0;
+
+  const activeFiltersCount = venueIds.length > 0 ? 1 : 0;
+
+  const handleSearch = () => {
+    if (isDirty && onSearchClick) {
+      onSearchClick({ searchTerm, venueIds });
+    }
+  };
+
+  const handleKeyPress = (event: React.KeyboardEvent) => {
+    if (event.key === "Enter") {
+      handleSearch();
+    }
+  };
+
+  // // Effect to set the states when initial values change
+  // useEffect(() => {
+  //   setSearchTerm(initialSearch);
+  //   setVenueIds(initialVenues);
+  // }, [initialSearch, initialVenues]);
 
   return (
     <Group>
@@ -51,7 +85,7 @@ export function PaperFilters({
       >
         <Popover.Target>
           <Button
-            variant={"light"}
+            variant="light"
             onClick={() => setOpened((o) => !o)}
             radius="md"
             color={activeFiltersCount > 0 ? "blue" : "gray"}
@@ -59,7 +93,7 @@ export function PaperFilters({
             <Group>
               <IconFilter size={18} />
               {activeFiltersCount > 0 && (
-                <Badge size="sm" ml="xs" color={"blue"}>
+                <Badge size="sm" ml="xs" color="blue">
                   {activeFiltersCount}
                 </Badge>
               )}
@@ -71,13 +105,17 @@ export function PaperFilters({
             <Title order={5}>Apply filters</Title>
             <MultiSelect
               data={venueOptions}
-              value={selectedVenues}
-              onChange={onVenueChange}
+              value={venueIds}
+              onChange={(ids) => setVenueIds(ids)}
               placeholder="Select venues"
               description="Filter by conference"
               searchable
               clearable
+              disabled={isLoading}
             />
+            <Button onClick={handleSearch} disabled={!isDirty}>
+              Apply filters
+            </Button>
           </Stack>
         </Popover.Dropdown>
       </Popover>
@@ -86,6 +124,7 @@ export function PaperFilters({
         placeholder="Search papers..."
         value={searchTerm}
         onChange={(event) => setSearchTerm(event.currentTarget.value)}
+        onKeyPress={handleKeyPress}
         leftSection={<IconBooks size={18} />}
         style={{ flex: 1 }}
         radius="md"
@@ -99,10 +138,11 @@ export function PaperFilters({
         }
       />
       <Button
-        onClick={() => onSearchClick && onSearchClick(searchTerm)}
+        onClick={handleSearch}
         radius="md"
         variant="filled"
         loading={isLoading}
+        disabled={!isDirty}
       >
         <IconSearch size={18} />
       </Button>
