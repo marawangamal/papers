@@ -6,9 +6,10 @@ import {
   Group,
   Popover,
   Button,
-  Badge,
   Stack,
   Title,
+  CloseButton,
+  Badge,
 } from "@mantine/core";
 import { IconBooks, IconSearch, IconFilter } from "@tabler/icons-react";
 import { Tables } from "@/types/database.types";
@@ -37,7 +38,6 @@ export function PaperFilters({
     value: v.id,
     label: `${v.abbrev} ${v.year}`,
   }));
-
   const activeFiltersCount = selectedVenues.length > 0 ? 1 : 0;
 
   return (
@@ -51,14 +51,15 @@ export function PaperFilters({
       >
         <Popover.Target>
           <Button
-            variant={"filled"}
+            variant={"light"}
             onClick={() => setOpened((o) => !o)}
             radius="md"
+            color={activeFiltersCount > 0 ? "blue" : "gray"}
           >
             <Group>
               <IconFilter size={18} />
               {activeFiltersCount > 0 && (
-                <Badge size="sm" ml="xs">
+                <Badge size="sm" ml="xs" color={"blue"}>
                   {activeFiltersCount}
                 </Badge>
               )}
@@ -89,6 +90,13 @@ export function PaperFilters({
         style={{ flex: 1 }}
         radius="md"
         disabled={isLoading}
+        rightSection={
+          <CloseButton
+            aria-label="Clear input"
+            onClick={() => setSearchTerm("")}
+            style={{ display: searchTerm ? undefined : "none" }}
+          />
+        }
       />
       <Button
         onClick={() => onSearchClick && onSearchClick(searchTerm)}
