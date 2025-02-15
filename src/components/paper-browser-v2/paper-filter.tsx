@@ -7,6 +7,8 @@ import {
   Popover,
   Button,
   Badge,
+  Stack,
+  Title,
 } from "@mantine/core";
 import { IconBooks, IconSearch, IconFilter } from "@tabler/icons-react";
 import { Tables } from "@/types/database.types";
@@ -40,6 +42,45 @@ export function PaperFilters({
 
   return (
     <Group>
+      <Popover
+        opened={opened}
+        onChange={setOpened}
+        width={300}
+        position="bottom-start"
+        disabled={isLoading}
+      >
+        <Popover.Target>
+          <Button
+            variant={"filled"}
+            onClick={() => setOpened((o) => !o)}
+            radius="md"
+          >
+            <Group>
+              <IconFilter size={18} />
+              {activeFiltersCount > 0 && (
+                <Badge size="sm" ml="xs">
+                  {activeFiltersCount}
+                </Badge>
+              )}
+            </Group>
+          </Button>
+        </Popover.Target>
+        <Popover.Dropdown>
+          <Stack>
+            <Title order={5}>Apply filters</Title>
+            <MultiSelect
+              data={venueOptions}
+              value={selectedVenues}
+              onChange={onVenueChange}
+              placeholder="Select venues"
+              description="Filter by conference"
+              searchable
+              clearable
+            />
+          </Stack>
+        </Popover.Dropdown>
+      </Popover>
+
       <TextInput
         placeholder="Search papers..."
         value={searchTerm}
@@ -57,40 +98,6 @@ export function PaperFilters({
       >
         <IconSearch size={18} />
       </Button>
-
-      <Popover
-        opened={opened}
-        onChange={setOpened}
-        width={300}
-        position="bottom-start"
-        disabled={isLoading}
-      >
-        <Popover.Target>
-          <Button
-            variant={activeFiltersCount > 0 ? "filled" : "light"}
-            leftSection={<IconFilter size={18} />}
-            onClick={() => setOpened((o) => !o)}
-            radius="md"
-          >
-            Filters
-            {activeFiltersCount > 0 && (
-              <Badge size="sm" ml="xs">
-                {activeFiltersCount}
-              </Badge>
-            )}
-          </Button>
-        </Popover.Target>
-        <Popover.Dropdown>
-          <MultiSelect
-            data={venueOptions}
-            value={selectedVenues}
-            onChange={onVenueChange}
-            placeholder="Select venues"
-            searchable
-            clearable
-          />
-        </Popover.Dropdown>
-      </Popover>
     </Group>
   );
 }
