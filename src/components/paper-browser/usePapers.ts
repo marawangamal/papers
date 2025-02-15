@@ -20,31 +20,38 @@ export default function usePapers({
   const [debouncedSearch] = useDebouncedValue(currentSearch, 300); // 300ms delay
 
   // Find the matching conference label for the current invitation
-  const currentVenue = venues.find((conf) => conf.id === searchParams.venue_id);
   const filteredPapers = papers;
   const page = searchParams.page || "1";
+  const selectedVenues = searchParams.venue_ids || [];
 
   const createQueryString = useCallback(
-    (name: string, value: string) => {
-      // Start with the current searchParams entries
+    (name: string, value: string | string[]) => {
       const params = new URLSearchParams();
 
       // Preserve existing params except the one we're updating
       Object.entries(searchParams).forEach(([key, val]) => {
-        if (key !== name) {
-          // Skip the param we're about to set
-          params.set(key, String(val)); // Ensure value is converted to string
+        if (key !== name && key !== name) { // Handle both formats
+          params.set(key, String(val));
         }
       });
-      params.set(name, value);
+
+      // Handle arrays using name[] notation
+      if (Array.isArray(value)) {
+        value.forEach((v) => {
+          params.append(name, v);
+        });
+      } else {
+        params.set(name, value);
+      }
+
       return params.toString();
     },
     [searchParams],
   );
 
-  const handleVenueChange = (venue_id?: string) => {
-    if (venue_id) {
-      router.push(pathname + "?" + createQueryString("venue_id", venue_id));
+  const handleVenuesChange = (venue_ids?: string[]) => {
+    if (venue_ids) {
+      router.push(pathname + "?" + createQueryString("venue_ids", venue_ids));
     } else router.push(pathname);
   };
 
@@ -68,27 +75,6 @@ export default function usePapers({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedSearch, pathname, router]);
 
-  /**
-   * When the venue_id changes, fetch new papers
-   */
-  // useEffect(() => {
-  //   startTransition(async () => {
-  //     try {
-  //       if (searchParams.venue_id) {
-  //         const fetchedPapers = await getPapers({
-  //           venue_id: searchParams.venue_id,
-  //         });
-  //         setPapers(fetchedPapers);
-  //       }
-  //     } catch (error: unknown) {
-  //       console.error(error);
-  //       setError(
-  //         error instanceof Error ? error.message : "Failed to load papers.",
-  //       );
-  //     }
-  //   });
-  // }, [searchParams.venue_id]);
-
   // Set default params
   useEffect(() => {
     let defaultPath = pathname;
@@ -105,11 +91,11 @@ export default function usePapers({
   useEffect(() => {
     startTransition(async () => {
       try {
-        if (currentVenue) {
+        if (searchParams.venue_ids) { // <--- router.push above  does not run if i comment this out?
           const fetchedPapers = await getMatchingPapers({
-            search: debouncedSearch,
-            page,
-            venue_id: currentVenue?.id || "",
+            search: searchParams.search,
+            page: searchParams.page,
+            venue_ids: searchParams.venue_ids,
           });
           setPapers(fetchedPapers);
         }
@@ -120,18 +106,18 @@ export default function usePapers({
         );
       }
     });
-  }, [debouncedSearch, page, currentVenue]);
+  }, [searchParams]);
 
   return {
     isFetching,
     error,
     notes: filteredPapers,
-    currentVenue,
     currentSearch,
-    handleConferenceChange: handleVenueChange,
     handleSearchChange,
     // New
-    selectedVenues: searchParams.venue_id ? [searchParams.venue_id] : [],
-    handleVenuesChange: (venues: string[]) => handleVenueChange(venues[0]),
+    selectedVenues: typeof selectedVenues === "string"
+      ? [selectedVenues]
+      : selectedVenues,
+    handleVenuesChange,
   };
 }

@@ -22,13 +22,13 @@ export async function getPapers({
 const PER_PAGE = 50;
 
 export type PaperSearchParams = {
-  venue_id: string;
+  venue_ids: string[];
   search?: string;
   page?: string;
 };
 
 export async function getMatchingPapers(
-  { search, page, venue_id }: PaperSearchParams,
+  { search, page, venue_ids }: PaperSearchParams,
 ) {
   const pageInt = parseInt(page || "1", 10);
   const supabase = await createClient();
@@ -36,7 +36,7 @@ export async function getMatchingPapers(
     const { data, error } = await supabase
       .from("papers")
       .select("*")
-      .eq("venue_id", venue_id).range(
+      .in("venue_id", venue_ids).range(
         (pageInt - 1) * PER_PAGE,
         pageInt * PER_PAGE - 1,
       );
@@ -52,7 +52,7 @@ export async function getMatchingPapers(
         search,
         page,
         per_page: PER_PAGE,
-        venue_id,
+        venue_ids,
       },
     },
   );
@@ -61,7 +61,7 @@ export async function getMatchingPapers(
   }
   // Log to search_logs table
   await supabase.from("search_logs").insert({
-    search_query: JSON.stringify({ search, page, venue_id }),
+    search_query: JSON.stringify({ search, page, venue_ids }),
   });
   return data?.result;
 }
