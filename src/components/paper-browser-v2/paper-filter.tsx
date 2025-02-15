@@ -18,6 +18,7 @@ type PaperFiltersProps = {
   initialSearch?: string;
   onVenueChange?: (venues: string[]) => void;
   onSearchClick?: (search: string) => void;
+  isLoading?: boolean;
 };
 
 export function PaperFilters({
@@ -26,6 +27,7 @@ export function PaperFilters({
   selectedVenues,
   onVenueChange,
   onSearchClick,
+  isLoading,
 }: PaperFiltersProps) {
   const [searchTerm, setSearchTerm] = useState(initialSearch || "");
   const [opened, setOpened] = useState(false);
@@ -45,11 +47,13 @@ export function PaperFilters({
         leftSection={<IconBooks size={18} />}
         style={{ flex: 1 }}
         radius="md"
+        disabled={isLoading}
       />
       <Button
         onClick={() => onSearchClick && onSearchClick(searchTerm)}
         radius="md"
         variant="filled"
+        loading={isLoading}
       >
         <IconSearch size={18} />
       </Button>
@@ -59,6 +63,7 @@ export function PaperFilters({
         onChange={setOpened}
         width={300}
         position="bottom-start"
+        disabled={isLoading}
       >
         <Popover.Target>
           <Button
