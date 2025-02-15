@@ -1,5 +1,6 @@
 "use server";
 
+import { Tables } from "@/types/database.types";
 import { createClient } from "@/utils/supabase/server";
 
 // utils/supabase-server.ts
@@ -32,14 +33,16 @@ export async function getMatchingPapers(
 ) {
   const pageInt = parseInt(page || "1", 10);
   const supabase = await createClient();
+
   if (!search) {
-    const { data, error } = await supabase
-      .from("papers")
-      .select("*")
-      .in("venue_id", venue_ids).range(
-        (pageInt - 1) * PER_PAGE,
-        pageInt * PER_PAGE - 1,
-      );
+    let query = supabase.from("papers").select("*").range(
+      (pageInt - 1) * PER_PAGE,
+      pageInt * PER_PAGE - 1,
+    );
+    if (venue_ids && venue_ids.length > 0) {
+      query = query.in("venue_id", venue_ids);
+    }
+    const { data, error } = await query;
     if (error) {
       throw error;
     }
@@ -63,5 +66,5 @@ export async function getMatchingPapers(
   await supabase.from("search_logs").insert({
     search_query: JSON.stringify({ search, page, venue_ids }),
   });
-  return data?.result;
+  return data?.result as Tables<"papers">[];
 }

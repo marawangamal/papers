@@ -1,20 +1,27 @@
-import { Stack } from "@mantine/core";
-import NavigateSlugs from "./nav";
+import { Stack, Text } from "@mantine/core";
+import { PaperBrowserProps } from "@/components/paper-browser";
+import { getMatchingPapers } from "@/lib/actions/papers";
 
 export default async function Page({
-  params,
+  //   params,
+  searchParams,
 }: {
-  params: Promise<{ id: string }>;
+  //   params: Promise<{ id: string }>;
+  searchParams: Promise<PaperBrowserProps["searchParams"]>;
 }) {
-  // Add short delay to simulate loading
-  await new Promise((resolve) => setTimeout(resolve, 10000));
-  const awaitedParams = await params;
-  const { id } = awaitedParams;
+  const awaitedSearchParams = await searchParams;
+  const papers = await getMatchingPapers({
+    search: awaitedSearchParams.search,
+    venue_ids: awaitedSearchParams.venue_ids,
+    page: awaitedSearchParams.page || "1",
+  });
 
   return (
     <Stack>
-      My Post: {id}
-      <NavigateSlugs />
+      <Text>Results</Text>
+      {papers.map((paper) => (
+        <div key={paper.id}>{paper.title}</div>
+      ))}
     </Stack>
   );
 }
