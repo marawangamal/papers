@@ -39,7 +39,6 @@ export function PaperFilters({
   const [venueIds, setVenueIds] = useState(initialVenues);
   const [opened, setOpened] = useState(false);
 
-  // Check if current values are different from initial values
   const isDirty = useMemo(() => {
     const searchChanged = searchTerm !== initialSearch;
     const venuesChanged =
@@ -60,6 +59,7 @@ export function PaperFilters({
     if (isDirty && onSearchClick) {
       onSearchClick({ searchTerm, venueIds });
     }
+    setOpened(false); // Close popover after applying filters
   };
 
   const handleKeyPress = (event: React.KeyboardEvent) => {
@@ -68,20 +68,15 @@ export function PaperFilters({
     }
   };
 
-  // // Effect to set the states when initial values change
-  // useEffect(() => {
-  //   setSearchTerm(initialSearch);
-  //   setVenueIds(initialVenues);
-  // }, [initialSearch, initialVenues]);
-
   return (
     <Group>
       <Popover
         opened={opened}
-        onChange={setOpened}
         width={300}
         position="bottom-start"
         disabled={isLoading}
+        withinPortal={false}
+        withArrow
       >
         <Popover.Target>
           <Button
@@ -101,12 +96,15 @@ export function PaperFilters({
           </Button>
         </Popover.Target>
         <Popover.Dropdown>
-          <Stack>
-            <Title order={5}>Apply filters</Title>
+          <Stack gap="md">
+            <Group justify="space-between">
+              <Title order={5}>Apply filters</Title>
+              <CloseButton onClick={() => setOpened(false)} />
+            </Group>
             <MultiSelect
               data={venueOptions}
               value={venueIds}
-              onChange={(ids) => setVenueIds(ids)}
+              onChange={setVenueIds}
               placeholder="Select venues"
               description="Filter by conference"
               searchable
