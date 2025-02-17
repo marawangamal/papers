@@ -7,7 +7,6 @@ import katex from "katex";
 import "katex/dist/katex.min.css";
 
 export type PaperBrowserProps = {
-  venues: Tables<"venues">[];
   papers: Tables<"vw_final_papers">[];
   searchParams: PaperSearchParams;
 };
@@ -36,7 +35,7 @@ function LatexText({
 
 export function PaperBrowser({ papers }: PaperBrowserProps) {
   return (
-    <Stack gap="xl" h="100%" style={{ overflow: "auto" }}>
+    <Stack gap="xl" h="100%">
       {papers.length > 0 ? (
         <Stack gap="md">
           {papers.map((paper, index) => (

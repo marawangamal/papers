@@ -9,8 +9,8 @@ export default function PublicLayout({
   children: React.ReactNode;
 }) {
   return (
-    <Container size="lg">
-      <Stack h="100vh" justify="space-between">
+    <Stack h="100vh" justify="space-between" style={{ paddingBottom: 20 }}>
+      <Container w="100%" size="lg">
         <Group
           justify="space-between"
           align="center"
@@ -28,10 +28,10 @@ export default function PublicLayout({
             <ColorSchemeToggle />
           </Group>
         </Group>
-        <Box flex={1} style={{ overflowY: "hidden" }}>
-          {children}
-        </Box>
-      </Stack>
-    </Container>
+      </Container>
+      <Box flex={1} style={{ overflowY: "hidden" }}>
+        {children}
+      </Box>
+    </Stack>
   );
 }
