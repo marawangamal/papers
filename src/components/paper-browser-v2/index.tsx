@@ -1,5 +1,5 @@
 "use client";
-import { Title, Text, Stack, Anchor, Card } from "@mantine/core";
+import { Title, Text, Stack, Anchor, Card, Badge, Group } from "@mantine/core";
 import { Tables } from "@/types/database.types";
 import { PaperSearchParams } from "@/lib/actions/papers";
 import katex from "katex";
@@ -12,7 +12,6 @@ export type PaperBrowserProps = {
 };
 
 function parseLatex(text: string): string {
-  // Replace $...$ with rendered LaTeX
   return text.replace(/\$(.*?)\$/g, (match, latex) => {
     try {
       return katex.renderToString(latex, {
@@ -21,12 +20,11 @@ function parseLatex(text: string): string {
       });
     } catch (e) {
       console.warn("LaTeX parsing error:", e);
-      return match; // Return original text if parsing fails
+      return match;
     }
   });
 }
 
-// Separate component for LaTeX text to prevent unnecessary re-renders
 function LatexText({
   text,
   ...props
@@ -42,10 +40,24 @@ export function PaperBrowser({ papers }: PaperBrowserProps) {
         <Stack gap="md">
           {papers.map((paper, index) => (
             <Card key={index} shadow="sm" padding="lg" radius="md" withBorder>
-              <Stack>
-                <Title order={5}>
-                  {paper.title ? <LatexText text={paper.title} /> : "Untitled"}
-                </Title>
+              <Stack gap="xs">
+                <Group justify="space-between" align="center">
+                  <Title order={5} style={{ flex: 1 }}>
+                    {paper.title ? (
+                      <LatexText text={paper.title} />
+                    ) : (
+                      "Untitled"
+                    )}
+                  </Title>
+                  <Group gap="xs">
+                    <Badge variant="light" color="blue">
+                      {paper.abbrev}
+                    </Badge>
+                    <Badge variant="outline" color="gray">
+                      {paper.year}
+                    </Badge>
+                  </Group>
+                </Group>
                 <Text size="sm" c="dimmed">
                   {paper.authors?.join(", ") || "No authors listed"}
                 </Text>
