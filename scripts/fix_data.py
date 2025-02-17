@@ -3,7 +3,7 @@ from pathlib import Path
 import pandas as pd
 from tqdm import tqdm
 import time
-from scrape_neuripsv2 import NeuripsScraper
+from scripts.scrape_neurips import NeuripsScraper
 
 DELAY = 0.2  # Delay between requests
 
