@@ -1,12 +1,6 @@
-"""This script only works on the latest ICML website (2020-present)
-
-Use the endpoint `/static/virtual/data/icml-{year}-orals-posters.json` to fetch paper data
-"""
-import csv
 import re
 import time
-from typing import List, Dict, Optional
-from urllib.parse import urljoin
+from typing import Dict, Optional
 from bs4 import BeautifulSoup
 from tqdm import tqdm
 
@@ -35,17 +29,11 @@ venue2abbrevMap = {
 }
 
 
-class PMLRScraper(ConferenceScraper):
-    """Neurips conference paper scraper"""
+class Scraper(ConferenceScraper):
     
     @property
     def base_url(self) -> str:
         return "https://proceedings.mlr.press"
-    
-    @property
-    def conference_name(self) -> str:
-        return "ICML"
-    
 
     def get_venue(self, year: int) -> Optional[Dict]:
         """Get venue information"""
@@ -102,9 +90,7 @@ class PMLRScraper(ConferenceScraper):
     
     def scrape_year(self, year: int):
         """Scrape all papers for a given year"""
-        print(f"Scraping {self.conference_name} {year}...")
-        
-        # Save venue information
+        print(f"Scraping {year}...")
         
         # Get the year's proceedings page
         url = f"{self.base_url}/v{year}"
@@ -134,5 +120,5 @@ class PMLRScraper(ConferenceScraper):
 # Usage example
 if __name__ == "__main__":
     # Scrape ICML papers
-    icml_scraper = PMLRScraper(output_dir='dumps/pmlr')
-    icml_scraper.scrape_multiple_years(list(range(0,  263, 1)))
+    scraper = Scraper(output_dir='dumps/pmlr2')
+    scraper.scrape_multiple_years(list(range(0,  263, 1)))
