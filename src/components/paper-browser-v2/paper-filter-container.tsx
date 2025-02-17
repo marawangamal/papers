@@ -34,6 +34,7 @@ export default function PaperFilterContainer({
           ? parseInt(searchParams.year_max, 10)
           : undefined,
       }}
+      initialHasCode={searchParams.has_code || false}
       onSearchClick={handleSearchClick}
       isLoading={isLoading}
     />

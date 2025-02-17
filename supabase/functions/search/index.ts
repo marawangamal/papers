@@ -21,10 +21,11 @@ type SearchParams = {
   venue_abbrevs?: string[];
   year_min?: number;
   year_max?: number;
+  has_code?: boolean; // Add new parameter
 };
 
 Deno.serve(async (req) => {
-  const { search, venue_abbrevs, year_min, year_max, page, per_page }:
+  const { search, venue_abbrevs, year_min, year_max, page, per_page, has_code }:
     SearchParams = await req.json();
 
   if (!search) return new Response("Please provide a search param!");
@@ -54,6 +55,10 @@ Deno.serve(async (req) => {
   }
   if (year_max !== undefined) {
     query = query.lte("year", year_max);
+  }
+  // Filter for papers with code if requested
+  if (has_code) {
+    query = query.not("code_url", "is", null);
   }
 
   // Apply pagination

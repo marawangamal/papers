@@ -8,6 +8,7 @@ export default function usePapers() {
     searchTerm,
     venue_abbrevs,
     yearRange,
+    has_code,
   }: {
     searchTerm?: string;
     venue_abbrevs?: string[];
@@ -15,6 +16,7 @@ export default function usePapers() {
       start?: number;
       end?: number;
     };
+    has_code?: boolean;
   }) => {
     const id = Math.random().toString(36).substring(7);
     const base = `/search/${id}`;
@@ -30,6 +32,9 @@ export default function usePapers() {
     }
     if (yearRange?.end) {
       params.push(`year_max=${yearRange.end}`);
+    }
+    if (has_code) {
+      params.push(`has_code=true`);
     }
     router.push(base + "?" + params.join("&"));
   };

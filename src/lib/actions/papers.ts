@@ -28,10 +28,12 @@ export type PaperSearchParams = {
   page?: string;
   year_min?: string;
   year_max?: string;
+  has_code?: boolean;
 };
 
 export async function getMatchingPapers(
-  { search, page, venue_abbrevs, year_max, year_min }: PaperSearchParams,
+  { search, page, venue_abbrevs, year_max, year_min, has_code }:
+    PaperSearchParams,
 ) {
   const pageInt = parseInt(page || "1", 10);
   const supabase = await createClient();
@@ -52,6 +54,10 @@ export async function getMatchingPapers(
       query = query.lte("year", year_max);
     }
 
+    if (has_code) {
+      query = query.not("code_url", "is", null);
+    }
+
     const { data, error } = await query;
     if (error) {
       throw error;
@@ -68,6 +74,7 @@ export async function getMatchingPapers(
         venue_abbrevs,
         year_min,
         year_max,
+        has_code,
       },
     },
   );

@@ -59,6 +59,7 @@ async function PageContent({
     page: searchParams.page || "1",
     year_min: searchParams.year_min,
     year_max: searchParams.year_max,
+    has_code: searchParams.has_code,
   });
 
   return (

@@ -11,6 +11,7 @@ import {
   Badge,
   NumberInput,
   Text,
+  Checkbox,
 } from "@mantine/core";
 import { IconBooks, IconSearch, IconFilter, IconX } from "@tabler/icons-react";
 import { Tables } from "@/types/database.types";
@@ -20,16 +21,20 @@ type PaperFiltersProps = {
   venues: Tables<"vw_final_venues">[];
   initialSearch?: string;
   initialVenues?: string[];
+  // TODO: use year_min and year_max to match api
   initialYearRange?: { start?: number; end?: number };
+  initialHasCode?: boolean; // Add this
   isLoading?: boolean;
   onSearchClick?: ({
     searchTerm,
     venue_abbrevs,
     yearRange,
+    has_code,
   }: {
     searchTerm?: string;
     venue_abbrevs?: string[];
     yearRange?: { start?: number; end?: number };
+    has_code?: boolean;
   }) => void;
 };
 
@@ -40,12 +45,14 @@ export function PaperFilters({
   initialSearch = "",
   initialVenues = [],
   initialYearRange = {},
+  initialHasCode = false, // Add this
   isLoading,
   onSearchClick,
 }: PaperFiltersProps) {
   const [searchTerm, setSearchTerm] = useState(initialSearch);
   const [selectedVenues, setSelectedVenues] = useState(initialVenues);
   const [yearRange, setYearRange] = useState(initialYearRange);
+  const [hasCode, setHasCode] = useState(initialHasCode); // Add this
   const [opened, setOpened] = useState(false);
 
   const isDirty = useMemo(() => {
@@ -57,26 +64,35 @@ export function PaperFilters({
     const yearRangeChanged =
       yearRange.start !== initialYearRange.start ||
       yearRange.end !== initialYearRange.end;
-    return searchChanged || venuesChanged || yearRangeChanged;
+    const hasCodeChanged = hasCode !== initialHasCode; // Add this
+    return searchChanged || venuesChanged || yearRangeChanged || hasCodeChanged;
   }, [
     searchTerm,
     selectedVenues,
     yearRange,
+    hasCode, // Add this
     initialSearch,
     initialVenues,
     initialYearRange,
+    initialHasCode, // Add this
   ]);
 
   const activeFiltersCount = useMemo(() => {
     let count = 0;
     if (selectedVenues.length > 0) count++;
     if (yearRange.start || yearRange.end) count++;
+    if (hasCode) count++; // Add this
     return count;
-  }, [selectedVenues.length, yearRange]);
+  }, [selectedVenues.length, yearRange, hasCode]); // Add hasCode to dependencies
 
   const handleSearch = () => {
     if (isDirty && onSearchClick) {
-      onSearchClick({ searchTerm, venue_abbrevs: selectedVenues, yearRange });
+      onSearchClick({
+        searchTerm,
+        venue_abbrevs: selectedVenues,
+        yearRange,
+        has_code: hasCode,
+      });
     }
     setOpened(false);
   };
@@ -115,28 +131,29 @@ export function PaperFilters({
           </Button>
         </Popover.Target>
         <Popover.Dropdown>
-          <Stack gap="md">
+          <Stack gap="lg">
             <Group justify="space-between">
               <Title order={5}>Apply filters</Title>
               <CloseButton onClick={() => setOpened(false)} />
             </Group>
+
             <Stack gap="xs">
-              <Text size="sm" c="dimmed">
-                Filter by conference
-              </Text>
-              <MultiSelect
-                data={venues.map((venue) => venue.abbrev as string)}
-                value={selectedVenues}
-                onChange={setSelectedVenues}
-                placeholder="Select venues"
-                // description="Filter by conference"
-                searchable
-                clearable
-                disabled={isLoading}
-              />
-            </Stack>
-            <Stack gap="xs">
-              <Stack gap="xs">
+              <Stack gap={0}>
+                <Text size="sm" c="dimmed">
+                  Filter by conference
+                </Text>
+                <MultiSelect
+                  data={venues.map((venue) => venue.abbrev as string)}
+                  value={selectedVenues}
+                  onChange={setSelectedVenues}
+                  placeholder="Select venues"
+                  // description="Filter by conference"
+                  searchable
+                  clearable
+                  disabled={isLoading}
+                />
+              </Stack>
+              <Stack gap={0}>
                 <Text size="sm" c="dimmed">
                   Filter by year
                 </Text>
@@ -169,8 +186,16 @@ export function PaperFilters({
                   />
                 </Group>
               </Stack>
+
+              <Checkbox
+                label="Has code"
+                checked={hasCode}
+                onChange={(event) => setHasCode(event.currentTarget.checked)}
+                disabled={isLoading}
+              />
             </Stack>
-            <Group justify="flex-end">
+
+            <Group justify="center">
               <Button
                 onClick={() => {
                   setSelectedVenues([]);
