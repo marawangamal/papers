@@ -22,7 +22,7 @@ To add a new conference, you must make a script that produces these two csvs:
 - `venues.csv` (name, abbrev, year)
 - `papers.csv` (title, authors, abstract, venue_abbrev, venue_year, pdf_url, code_url)
 
-You can create the script from scratch or use the ConferenceScraper base class to help you. Here's a simple Example:
+You can create the script from scratch or use the [ConferenceScraper](scripts/base.py) base class to help you. Here's a simple Example:
 
 ```python
 from base import ConferenceScraper
