@@ -55,6 +55,16 @@ class ConferenceScraper(ABC):
                     'title', 'authors', 'abstract', 'venue_abbrev', 
                     'venue_year', 'pdf_url', 'code_url'
                 ])
+
+    def save_venue(self, venue: Dict):
+        """Save venue information for the given year"""
+        with open(self.output_dir / 'venues.csv', 'a', newline='', encoding='utf-8') as f:
+            writer = csv.writer(f)
+            writer.writerow([
+                venue['title'],
+                venue['abbrev'],
+                venue['year'],
+            ])
     
     def save_venue_info(self, year: int):
         """Save venue information for the given year"""
@@ -65,6 +75,21 @@ class ConferenceScraper(ABC):
                 self.conference_name,
                 year,
             ])
+
+    def save_paper(self, paper_data: Dict):
+        """Save paper information to CSV"""
+        with open(self.output_dir / 'papers.csv', 'a', newline='', encoding='utf-8') as f:
+            writer = csv.writer(f)
+            writer.writerow([
+                paper_data.get('title', ''),
+                '|'.join(paper_data.get('authors', [])),
+                paper_data.get('abstract', ''),
+                paper_data.get('venue_abbrev', ''),
+                paper_data.get('venue_year', ''),
+                paper_data.get('pdf_url'),
+                paper_data.get('code_url')
+            ])
+
     
     def save_paper_info(self, paper_data: Dict, year: int):
         """Save paper information to CSV"""
