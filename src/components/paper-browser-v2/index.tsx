@@ -1,5 +1,6 @@
 "use client";
-import { Title, Text, Stack, Anchor, Card, Badge, Group } from "@mantine/core";
+import { Title, Text, Stack, Card, Badge, Group, Button } from "@mantine/core";
+import { IconBrandGithub, IconFileText } from "@tabler/icons-react";
 import { Tables } from "@/types/database.types";
 import { PaperSearchParams } from "@/lib/actions/papers";
 import katex from "katex";
@@ -62,16 +63,36 @@ export function PaperBrowser({ papers }: PaperBrowserProps) {
                   {paper.authors?.join(", ") || "No authors listed"}
                 </Text>
                 {paper.abstract && <LatexText text={paper.abstract} />}
-                {paper.pdf_url && (
-                  <Anchor
-                    href={paper.pdf_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    size="sm"
-                  >
-                    View PDF
-                  </Anchor>
-                )}
+                <Group mt="sm">
+                  {paper.pdf_url && (
+                    <Button
+                      component="a"
+                      href={paper.pdf_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      leftSection={<IconFileText size={16} />}
+                      variant="light"
+                      color="blue"
+                      size="sm"
+                    >
+                      PDF
+                    </Button>
+                  )}
+                  {paper.code_url && (
+                    <Button
+                      component="a"
+                      href={paper.code_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      leftSection={<IconBrandGithub size={16} />}
+                      variant="light"
+                      color="green"
+                      size="sm"
+                    >
+                      Code
+                    </Button>
+                  )}
+                </Group>
               </Stack>
             </Card>
           ))}
