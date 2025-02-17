@@ -28,8 +28,11 @@ Deno.serve(async (req) => {
   console.log("ID:", id);
 
   // Check if content has changed.
-  if (abstract === payload?.old_record?.abstract) {
-    console.log("No change detected in abstract");
+  if (
+    abstract === payload?.old_record?.abstract &&
+    payload?.old_record?.abstract_embedding
+  ) {
+    console.log("No change detected in abstract (and embedding exists)");
     return new Response("ok - no change");
   }
 
