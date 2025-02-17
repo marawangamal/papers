@@ -100,7 +100,7 @@ class ConferenceScraper(ABC):
         """Extract GitHub URL from text"""
         import re
         github_urls = re.findall(r'https?://github\.com/[^\s)+\]]+', text.lower())
-        return github_urls[0] if github_urls else None
+        return github_urls[0].rstrip('.') if github_urls else None
     
     def get_metadata_from_citation_tags(self, soup: BeautifulSoup) -> Dict:
         """Extract metadata from citation meta tags"""

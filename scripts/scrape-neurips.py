@@ -55,31 +55,29 @@ class NeurIPSScraper:
         return metadata
 
     def scrape_paper_details(self, paper_url: str) -> Dict:
-        """Scrape individual paper page"""
-        full_url = urljoin(self.base_url, paper_url)
-        response = self.session.get(full_url)
-        soup = BeautifulSoup(response.text, 'html.parser')
-        
-        # Get metadata from citation tags
-        metadata = self.get_metadata_from_citation_tags(soup)
-        
-        # Get abstract - find the h4 header and get the next p tag
-        abstract_header = soup.find('h4', text=re.compile('Abstract', re.IGNORECASE))
-        if abstract_header and abstract_header.find_next('p'):
-            metadata['abstract'] = abstract_header.find_next('p').text.strip()
-        else:
-            metadata['abstract'] = ''
-        
-        # Look for code link in buttons or regular links
-        metadata['code_url'] = None
-        for link in soup.find_all('a'):
-            href = link.get('href', '')
-            text = link.text.strip().lower()
-            if 'code' in text or 'github' in href.lower():
-                metadata['code_url'] = href
-                break
-        
-        return metadata
+            """Scrape individual paper page"""
+            full_url = urljoin(self.base_url, paper_url)
+            response = self.session.get(full_url)
+            soup = BeautifulSoup(response.text, 'html.parser')
+            
+            # Get metadata from citation tags
+            metadata = self.get_metadata_from_citation_tags(soup)
+            
+            # Get abstract - find the h4 header and get the next p tag
+            abstract_header = soup.find('h4', text=re.compile('Abstract', re.IGNORECASE))
+            if abstract_header and abstract_header.find_next('p'):
+                metadata['abstract'] = abstract_header.find_next('p').text.strip()
+            else:
+                metadata['abstract'] = ''
+            
+            # Look for code link in buttons or regular links
+            metadata['code_url'] = None
+            for link in soup.find_all('a'):
+                href = link.get('href', '')
+                text = link.text.strip().lower()
+                if 'code' in text or 'github' in href.lower():
+                    metadata['code_url'] = self.fix_url(href)
+                    break
 
     def scrape_year(self, year: int):
         """Scrape all papers for a given year"""

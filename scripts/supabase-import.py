@@ -162,8 +162,8 @@ if __name__ == "__main__":
     script_dir = Path(__file__).parent
     root_dir = script_dir.parent
     
-    venues_path = root_dir / "dumps/icml/venues.csv"
-    papers_path = root_dir / "dumps/icml/papers.csv"
+    venues_path = root_dir / "dumps/neurips/venues.csv"
+    papers_path = root_dir / "dumps/neurips/papers.csv"
     
     importer = SupabaseImporter(
         venues_path=venues_path,
