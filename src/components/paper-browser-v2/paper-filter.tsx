@@ -200,6 +200,7 @@ export function PaperFilters({
                 onClick={() => {
                   setSelectedVenues([]);
                   setYearRange({});
+                  setHasCode(false);
                 }}
                 variant="outline"
                 leftSection={<IconX size={18} />}
