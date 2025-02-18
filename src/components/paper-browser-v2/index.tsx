@@ -1,10 +1,50 @@
 "use client";
-import { Title, Text, Stack, Card, Badge, Group, Button } from "@mantine/core";
-import { IconBrandGithub, IconFileText } from "@tabler/icons-react";
+import {
+  Title,
+  Text,
+  Stack,
+  Card,
+  Badge,
+  Group,
+  Button,
+  CopyButton,
+  Tooltip,
+} from "@mantine/core";
+import {
+  IconBrandGithub,
+  IconCheck,
+  IconFileText,
+  IconQuoteFilled,
+} from "@tabler/icons-react";
 import { Tables } from "@/types/database.types";
 import { PaperSearchParams } from "@/lib/actions/papers";
 import katex from "katex";
 import "katex/dist/katex.min.css";
+
+const removeSpecialChars = (text: string) =>
+  text.replace(/[^a-zA-Z0-9]/g, "").toLowerCase();
+
+function generateBibTeX(paper: Tables<"vw_final_papers">) {
+  const authors = paper.authors?.join(" and ") || "";
+  const year = paper.year || "";
+  const titleSum = removeSpecialChars(
+    (paper.title || "").split(" ")[0].toLowerCase()
+  );
+  const key = `${authors
+    .split(",")[0]
+    .split(" ")
+    .pop()
+    ?.toLowerCase()}${year}${titleSum}`;
+
+  const urlField = paper.pdf_url ? `  url={${paper.pdf_url}},\n` : "";
+
+  return `@inproceedings{${key},
+  title={${paper.title}},
+  author={${authors}},
+  booktitle={${paper.abbrev || ""}},
+  year={${year}}${urlField ? ",\n" + urlField.slice(0, -1) : ""}
+}`;
+}
 
 export type PaperBrowserProps = {
   papers: Tables<"vw_final_papers">[];
@@ -91,6 +131,27 @@ export function PaperBrowser({ papers }: PaperBrowserProps) {
                       Code
                     </Button>
                   )}
+                  <Tooltip label="Copy bibTeX">
+                    <CopyButton value={generateBibTeX(paper)}>
+                      {({ copied, copy }) => (
+                        <Button
+                          onClick={copy}
+                          leftSection={
+                            copied ? (
+                              <IconCheck size={16} />
+                            ) : (
+                              <IconQuoteFilled size={16} />
+                            )
+                          }
+                          variant="light"
+                          color="gray"
+                          size="sm"
+                        >
+                          {copied ? "Copied" : "BibTeX"}
+                        </Button>
+                      )}
+                    </CopyButton>
+                  </Tooltip>
                 </Group>
               </Stack>
             </Card>
