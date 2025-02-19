@@ -48,3 +48,52 @@ if __name__ == '__main__':
     scraper.scrape_multiple_years([2020, 2021])
 
 ```
+
+## Local Development
+
+This will get a local instance of the app running, with sample data.
+
+### Prerequisites
+- Node.js
+- npm
+- Docker
+
+### Steps
+
+1. Clone and install
+```bash
+git clone git@github.com:marawangamal/paperz.git
+cd git@github.com:marawangamal/paperz.git
+npm install
+npm run build
+```
+
+2. Install Supabase CLI
+```bash
+brew install supabase/tap/supabase  # macOS
+```
+
+3. Start local environment
+```bash
+docker start
+supabase start
+```
+
+4. Set up environment
+```bash
+# Copy the displayed credentials into .env.local:
+NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321
+NEXT_PUBLIC_SUPABASE_ANON_KEY=[your-local-anon-key]
+```
+
+5. Initialize database
+```bash
+supabase db reset
+```
+
+6. Start app
+```bash
+npm run dev
+```
+
+You should now see it on [http://localhost:3000](http://localhost:3000)
