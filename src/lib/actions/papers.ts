@@ -69,12 +69,12 @@ export async function getMatchingPapers(
     {
       body: {
         search,
-        page,
+        page: page || "1",
         per_page: PER_PAGE,
-        venue_abbrevs,
-        year_min,
-        year_max,
-        has_code,
+        venue_abbrevs: venue_abbrevs || [],
+        year_min: year_min || "1900",
+        year_max: year_max || new Date().getFullYear().toString(),
+        has_code: has_code || false,
       },
     },
   );
