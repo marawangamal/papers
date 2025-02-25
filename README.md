@@ -12,9 +12,70 @@ A semantic search engine for academic papers from major ML conferences.
 ## Features
 
 - [x] Search papers using natural language queries
-- [ ] Reverse search using a paper (graph visualization)
+- [ ] Display similar papers (ability to click on a paper and see other papers similar to it)
+- [ ] Sort by year
+- [ ] Add citations count
+- [ ] Add list of citing papers
 
-## Contributing a scraper
+## Local Development
+
+This will get a local instance of the app running, with sample data.
+
+### Prerequisites
+
+- Node.js
+- npm
+- Docker
+
+### Steps
+
+1. Clone and install
+
+```bash
+git clone git@github.com:marawangamal/paperz.git
+cd git@github.com:marawangamal/paperz.git
+npm install
+npm run build
+```
+
+2. Install Supabase CLI
+
+```bash
+brew install supabase/tap/supabase  # macOS
+```
+
+3. Start local environment
+
+```bash
+docker start
+supabase start
+```
+
+4. Set up environment
+
+```bash
+# Copy the displayed credentials into .env.local:
+NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321
+NEXT_PUBLIC_SUPABASE_ANON_KEY=[your-local-anon-key]
+```
+
+5. Initialize database
+
+```bash
+supabase db reset
+```
+
+6. Start app
+
+```bash
+npm run dev
+```
+
+You should now see it on [http://localhost:3000](http://localhost:3000)
+
+## Contributing
+
+### Adding a new conference
 
 To add a new conference, you must make a script that produces these two csvs:
 
@@ -49,51 +110,11 @@ if __name__ == '__main__':
 
 ```
 
-## Local Development
+### Submitting a PR
 
-This will get a local instance of the app running, with sample data.
-
-### Prerequisites
-- Node.js
-- npm
-- Docker
-
-### Steps
-
-1. Clone and install
-```bash
-git clone git@github.com:marawangamal/paperz.git
-cd git@github.com:marawangamal/paperz.git
-npm install
-npm run build
-```
-
-2. Install Supabase CLI
-```bash
-brew install supabase/tap/supabase  # macOS
-```
-
-3. Start local environment
-```bash
-docker start
-supabase start
-```
-
-4. Set up environment
-```bash
-# Copy the displayed credentials into .env.local:
-NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321
-NEXT_PUBLIC_SUPABASE_ANON_KEY=[your-local-anon-key]
-```
-
-5. Initialize database
-```bash
-supabase db reset
-```
-
-6. Start app
-```bash
-npm run dev
-```
-
-You should now see it on [http://localhost:3000](http://localhost:3000)
+1. Request access as a contributor
+2. Create a new branch (`git checkout -b Feat/my-feature`)
+3. Make your changes
+4. Run linting: `npm run lint`
+5. Commit your changes (`git commit -m 'Add some feature'`)
+6. Open a Pull Request
