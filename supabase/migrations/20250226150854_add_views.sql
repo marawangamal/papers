@@ -32,16 +32,6 @@ FROM cte_event_log_summary;
 -- -- Final Views
 -- -- *********************************************************
 
-CREATE OR REPLACE VIEW public.vw_final_collection_papers AS
-SELECT 
-  p.*, 
-  c.name as collection_name, 
-  c.id as collection_id, 
-  c.user_id 
-FROM collections c 
-LEFT JOIN collection_papers cp ON c.id = cp.collection_id
-LEFT JOIN papers p ON p.id = cp.paper_id;
-
 
 
 CREATE OR REPLACE VIEW vw_final_venues AS
@@ -60,3 +50,13 @@ FROM papers p
 JOIN venues v ON p.venue_id = v.id
 LEFT JOIN vw_derived_event_log_summary el ON p.id = el.paper_id;
 
+
+CREATE OR REPLACE VIEW public.vw_final_collection_papers AS
+SELECT 
+    p.*, 
+    c.name as collection_name, 
+    c.id as collection_id, 
+    c.user_id 
+FROM collection_papers cp 
+LEFT JOIN collections c ON c.id = cp.collection_id
+LEFT JOIN vw_final_papers p ON p.id = cp.paper_id;

@@ -1,58 +1,8 @@
 "use client";
-import {
-  Title,
-  Text,
-  Stack,
-  Card,
-  Badge,
-  Group,
-  Button,
-  CopyButton,
-  Tooltip,
-} from "@mantine/core";
-import {
-  IconBrandGithub,
-  IconCheck,
-  IconEye,
-  IconFileText,
-  IconHeart,
-  IconHeartFilled,
-  IconQuoteFilled,
-} from "@tabler/icons-react";
+import { Text, Stack } from "@mantine/core";
 import { Tables } from "@/types/database.types";
 import { PaperSearchParams } from "@/lib/actions/papers";
-import katex from "katex";
-import "katex/dist/katex.min.css";
-import { useState } from "react";
-import {
-  addToLikedCollection,
-  removeFromLikedCollection,
-} from "@/lib/actions/collections";
-
-const removeSpecialChars = (text: string) =>
-  text.replace(/[^a-zA-Z0-9]/g, "").toLowerCase();
-
-function generateBibTeX(paper: Tables<"vw_final_papers">) {
-  const authors = paper.authors?.join(" and ") || "";
-  const year = paper.year || "";
-  const titleSum = removeSpecialChars(
-    (paper.title || "").split(" ")[0].toLowerCase()
-  );
-  const key = `${authors
-    .split(",")[0]
-    .split(" ")
-    .pop()
-    ?.toLowerCase()}${year}${titleSum}`;
-
-  const urlField = paper.pdf_url ? `  url={${paper.pdf_url}},\n` : "";
-
-  return `@inproceedings{${key},
-  title={${paper.title}},
-  author={${authors}},
-  booktitle={${paper.abbrev || ""}},
-  year={${year}}${urlField ? ",\n" + urlField.slice(0, -1) : ""}
-}`;
-}
+import { ResearchPaper } from "./research-paper";
 
 export type PaperBrowserProps = {
   papers: Tables<"vw_final_papers">[];
@@ -60,179 +10,21 @@ export type PaperBrowserProps = {
   collectionPapers?: Tables<"vw_final_collection_papers">[];
 };
 
-function parseLatex(text: string): string {
-  return text.replace(/\$(.*?)\$/g, (match, latex) => {
-    try {
-      return katex.renderToString(latex, {
-        throwOnError: false,
-        output: "html",
-      });
-    } catch (e) {
-      console.warn("LaTeX parsing error:", e);
-      return match;
-    }
-  });
-}
-
-function LatexText({
-  text,
-  ...props
-}: { text: string } & React.ComponentProps<typeof Text>) {
-  const parsedText = parseLatex(text);
-  return <Text {...props} dangerouslySetInnerHTML={{ __html: parsedText }} />;
-}
-
 export function PaperBrowser({ papers, collectionPapers }: PaperBrowserProps) {
-  const [isLikingPaper, setIsLikingPaper] = useState<
-    Tables<"vw_final_papers">["id"][]
-  >([]);
-
-  // Create a Map of collectionPapers for faster lookup
-  const collectionPapersMap = new Map(
-    collectionPapers?.map((paper) => [paper.id, paper]) || []
+  const collectionPapersIds = new Set(
+    collectionPapers?.map((paper) => paper.id as string)
   );
-
-  const handlePaperLikeClick = async (paper: Tables<"vw_final_papers">) => {
-    setIsLikingPaper((prev) => [...prev, paper.id]);
-    if (collectionPapersMap.has(paper.id)) {
-      await removeFromLikedCollection({ paper_id: paper.id as string });
-    } else {
-      await addToLikedCollection({ paper_id: paper.id as string });
-    }
-    setIsLikingPaper((prev) => prev.filter((id) => id !== paper.id));
-  };
 
   return (
     <Stack gap="xl" h="100%">
       {papers.length > 0 ? (
         <Stack gap="md">
           {papers.map((paper, index) => (
-            <Card key={index} shadow="sm" padding="lg" radius="md" withBorder>
-              <Stack gap="xs">
-                <Group justify="space-between" align="center">
-                  <Title order={5} style={{ flex: 1 }}>
-                    {paper.title ? (
-                      <LatexText text={paper.title} />
-                    ) : (
-                      "Untitled"
-                    )}
-                  </Title>
-                  <Group gap="xs">
-                    <Badge variant="light" color="blue">
-                      {paper.abbrev}
-                    </Badge>
-                    <Badge variant="outline" color="gray">
-                      {paper.year}
-                    </Badge>
-                  </Group>
-                </Group>
-                <Text size="sm" c="dimmed">
-                  {paper.authors?.join(", ") || "No authors listed"}
-                </Text>
-                {paper.abstract && <LatexText text={paper.abstract} />}
-
-                <Group mt="md" justify="space-between" align="center">
-                  <Group gap="xs">
-                    <Tooltip label={paper.view_count + " views"}>
-                      <Group
-                        gap={6}
-                        style={{ color: "var(--mantine-color-dimmed)" }}
-                      >
-                        <IconEye size={16} stroke={1.5} />
-                        <Text size="sm" span>
-                          {paper.view_count || 0}
-                        </Text>
-                      </Group>
-                    </Tooltip>
-                    <Tooltip label={paper.like_count + " likes"}>
-                      <Group
-                        gap={6}
-                        style={{ color: "var(--mantine-color-red-filled)" }}
-                      >
-                        <IconHeartFilled size={16} stroke={1.5} />
-                        <Text size="sm" span>
-                          {paper.like_count || 0}
-                        </Text>
-                      </Group>
-                    </Tooltip>
-                  </Group>
-
-                  <Group gap="md">
-                    {paper.pdf_url && (
-                      <Button
-                        component="a"
-                        href={paper.pdf_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        leftSection={<IconFileText size={16} />}
-                        variant="light"
-                        color="blue"
-                        size="sm"
-                      >
-                        PDF
-                      </Button>
-                    )}
-                    {paper.code_url && (
-                      <Button
-                        component="a"
-                        href={paper.code_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        leftSection={<IconBrandGithub size={16} />}
-                        variant="light"
-                        color="green"
-                        size="sm"
-                      >
-                        Code
-                      </Button>
-                    )}
-                    <Tooltip label="Copy bibTeX">
-                      <CopyButton value={generateBibTeX(paper)}>
-                        {({ copied, copy }) => (
-                          <Button
-                            onClick={copy}
-                            leftSection={
-                              copied ? (
-                                <IconCheck size={16} />
-                              ) : (
-                                <IconQuoteFilled size={16} />
-                              )
-                            }
-                            variant="light"
-                            color="gray"
-                            size="sm"
-                          >
-                            {copied ? "Copied" : "BibTeX"}
-                          </Button>
-                        )}
-                      </CopyButton>
-                    </Tooltip>
-                    {collectionPapers && (
-                      <Button
-                        onClick={() => handlePaperLikeClick(paper)}
-                        loading={isLikingPaper.includes(paper.id)}
-                        leftSection={
-                          collectionPapersMap.has(paper.id) ? (
-                            <IconHeartFilled size={16} />
-                          ) : (
-                            <IconHeart size={16} />
-                          )
-                        }
-                        variant={
-                          collectionPapersMap.has(paper.id)
-                            ? "light"
-                            : "outline"
-                        }
-                        color="red"
-                        size="sm"
-                      >
-                        {collectionPapersMap.has(paper.id) ? "Liked" : "Like"}
-                      </Button>
-                    )}
-                  </Group>
-                </Group>
-              </Stack>
-            </Card>
+            <ResearchPaper
+              key={index}
+              paper={paper}
+              collectionPapersIds={collectionPapersIds}
+            />
           ))}
         </Stack>
       ) : (

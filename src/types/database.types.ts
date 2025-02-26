@@ -289,6 +289,7 @@ export type Database = {
       };
       vw_final_collection_papers: {
         Row: {
+          abbrev: string | null;
           abstract: string | null;
           abstract_embedding: string | null;
           authors: string[] | null;
@@ -297,12 +298,15 @@ export type Database = {
           collection_name: string | null;
           created_at: string | null;
           id: string | null;
+          like_count: number | null;
           normalized_title: string | null;
           pdf_url: string | null;
           status: string | null;
           title: string | null;
           user_id: string | null;
           venue_id: string | null;
+          view_count: number | null;
+          year: number | null;
         };
         Relationships: [
           {

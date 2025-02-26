@@ -2,6 +2,7 @@
 
 import { Tables } from "@/types/database.types";
 import { createClient } from "@/utils/supabase/server";
+const PER_PAGE = 50;
 
 // utils/supabase-server.ts
 export async function getPapers({
@@ -20,7 +21,19 @@ export async function getPapers({
   return data;
 }
 
-const PER_PAGE = 50;
+export async function getTrendingPapers() {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("vw_final_papers")
+    .select("*")
+    .order("like_count", { ascending: false })
+    .order("view_count", { ascending: false })
+    .limit(5);
+  if (error) {
+    throw error;
+  }
+  return data;
+}
 
 export type PaperSearchParams = {
   venue_abbrevs: string[]; // abbrev column
