@@ -23,24 +23,6 @@ create table "public"."collection_papers" (
 CREATE INDEX collection_papers_paper_id_idx ON public.collection_papers USING btree (paper_id);
 CREATE INDEX collections_user_id_idx ON public.collections USING btree (user_id);
 
--- Function to automatically create the default "Liked" collection for new users
--- CREATE OR REPLACE FUNCTION public.create_default_collections_for_new_user()
--- RETURNS TRIGGER AS $$
--- BEGIN
---     -- Create the "Liked" collection for the new user
---     INSERT INTO public.collections (user_id, name)
---     VALUES (NEW.id, 'Liked');
-    
---     RETURN NEW;
--- END;
--- $$ LANGUAGE plpgsql;
-
--- -- Trigger to create default collections when a new user is created
--- CREATE TRIGGER create_default_collections_trigger
--- AFTER INSERT ON auth.users
--- FOR EACH ROW
--- EXECUTE FUNCTION public.create_default_collections_for_new_user();
-
 create function public.handle_new_user()
 returns trigger
 language plpgsql
@@ -126,3 +108,12 @@ USING (
 
 -- No update policy needed for collection_papers since there are no fields to update
 -- (only collection_id and paper_id which are the primary key)
+
+
+
+CREATE OR REPLACE VIEW public.vw_final_collection_papers AS
+SELECT p.*, c.name as collection_name, c.id as collection_id, c.user_id 
+FROM collections c 
+LEFT JOIN collection_papers cp ON c.id = cp.collection_id
+LEFT JOIN papers p ON p.id = cp.paper_id;
+

@@ -1,5 +1,10 @@
 "use client";
-import { IconHome2, IconLogout, IconSearch } from "@tabler/icons-react";
+import {
+  IconHeart,
+  IconHome2,
+  IconLogout,
+  IconSearch,
+} from "@tabler/icons-react";
 import {
   Center,
   Stack,
@@ -21,7 +26,7 @@ const mockdata = [
   { icon: IconHome2, label: "Home", path: "/dashboard" },
   // { icon: IconCirclePlus, label: "Create", path: "/create" },
   { icon: IconSearch, label: "Search", path: "/search" },
-  // { icon: IconWorld, label: "Community", path: "/community" },
+  { icon: IconHeart, label: "Community", path: "/liked-papers" },
   // { icon: IconSettings, label: "Settings", path: "/settings" },
 ];
 
