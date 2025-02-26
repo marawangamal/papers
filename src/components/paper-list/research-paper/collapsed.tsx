@@ -25,7 +25,7 @@ export default function ResearchPaperCollapsed({
               color="red"
               size="xs"
               loading={isLoading}
-              onClick={() => onLikeClick(paper)}
+              onClick={() => onLikeClick?.(paper)}
             >
               <IconTrash size={16} />
             </ActionIcon>

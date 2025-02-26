@@ -1,5 +1,6 @@
 "use client";
 import TPaper from "@/components/ui/tpaper";
+import { createEvent } from "@/lib/actions/papers";
 import { Tables } from "@/types/database.types";
 import {
   Title,
@@ -104,6 +105,12 @@ export function ResearchPaperExpanded({
                 variant="light"
                 color="blue"
                 size="sm"
+                onClick={() => {
+                  createEvent({
+                    event: "view",
+                    paper_id: paper.id,
+                  });
+                }}
               >
                 PDF
               </Button>
@@ -118,6 +125,12 @@ export function ResearchPaperExpanded({
                 variant="light"
                 color="green"
                 size="sm"
+                onClick={() => {
+                  createEvent({
+                    event: "view",
+                    paper_id: paper.id,
+                  });
+                }}
               >
                 Code
               </Button>
@@ -126,7 +139,13 @@ export function ResearchPaperExpanded({
               <CopyButton value={bibTeX}>
                 {({ copied, copy }) => (
                   <Button
-                    onClick={copy}
+                    onClick={() => {
+                      copy();
+                      createEvent({
+                        event: "view",
+                        paper_id: paper.id,
+                      });
+                    }}
                     leftSection={
                       copied ? (
                         <IconCheck size={16} />
