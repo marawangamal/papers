@@ -1,7 +1,11 @@
 "use client";
-import { IconHome2, IconLogout, IconSearch } from "@tabler/icons-react";
+import {
+  IconBrain,
+  IconHome2,
+  IconLogout,
+  IconSearch,
+} from "@tabler/icons-react";
 import { Center, Stack, Box, useMantineTheme } from "@mantine/core";
-import { Logo } from "@/lib/icons/logo-shape";
 import { usePathname } from "next/navigation";
 import { logout } from "@/lib/actions/auth";
 import { useTransition } from "react";
@@ -43,7 +47,7 @@ export function NavbarMinimal() {
       }}
     >
       <Center>
-        <Logo type="mark" size={30} />
+        <IconBrain size={28} stroke={1.5} />
       </Center>
 
       <Box style={{ flex: 1, marginTop: 50 }}>
