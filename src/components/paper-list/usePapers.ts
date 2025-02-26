@@ -2,7 +2,7 @@
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 
-export default function usePapers() {
+export default function usePapers({ basePath = "/" }: { basePath?: string }) {
   const [isRedirecting, startRedirecting] = useTransition();
   const router = useRouter();
 
@@ -21,8 +21,6 @@ export default function usePapers() {
     has_code?: boolean;
   }) => {
     startRedirecting(() => {
-      // const id = Math.random().toString(36).substring(7);
-      const base = `/search/1`;
       const params = new Array<string>();
       if (searchTerm) {
         params.push(`search=${searchTerm}`);
@@ -39,7 +37,7 @@ export default function usePapers() {
       if (has_code) {
         params.push(`has_code=true`);
       }
-      router.push(base + "?" + params.join("&"));
+      router.push(basePath + "?" + params.join("&"));
     });
   };
 

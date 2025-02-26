@@ -49,7 +49,13 @@ async function PaperFilterAsync({
   searchParams: PaperBrowserProps["searchParams"];
 }) {
   const venues = await getVenues();
-  return <PaperFilterContainer venues={venues} searchParams={searchParams} />;
+  return (
+    <PaperFilterContainer
+      venues={venues}
+      searchParams={searchParams}
+      basePath="/search"
+    />
+  );
 }
 
 async function PaperListAsync({
