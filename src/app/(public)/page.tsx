@@ -65,7 +65,13 @@ async function PaperListAsync({
     has_code: searchParams.has_code,
   });
 
-  return <PaperBrowser papers={papers} searchParams={searchParams} />;
+  return (
+    <PaperBrowser
+      papers={papers}
+      searchParams={searchParams}
+      isLikeVisible={false}
+    />
+  );
 }
 
 function PaperFilterAsyncSkeleton({

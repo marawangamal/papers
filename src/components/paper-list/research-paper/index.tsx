@@ -54,10 +54,12 @@ export function ResearchPaper({
   paper,
   mode = "expanded",
   collectionPapersIds,
+  isLikeVisible = false,
 }: {
   paper: Tables<"vw_final_papers"> | Tables<"vw_final_collection_papers">;
   mode?: "expanded" | "summary" | "collapsed";
   collectionPapersIds: Set<string>;
+  isLikeVisible?: boolean;
 }) {
   const [isLikingPaper, startTransition] = useTransition();
 
@@ -85,6 +87,7 @@ export function ResearchPaper({
         isLiked={collectionPapersIds.has(paper.id as string)}
         bibTeX={generateBibTeX(paper)}
         isLoading={isLikingPaper}
+        isLikeVisible={isLikeVisible}
       />
     );
   } else if (mode === "summary") {
@@ -95,6 +98,7 @@ export function ResearchPaper({
         isLiked={collectionPapersIds.has(paper.id as string)}
         bibTeX={generateBibTeX(paper)}
         isLoading={isLikingPaper}
+        isLikeVisible={isLikeVisible}
       />
     );
   } else {
@@ -105,6 +109,7 @@ export function ResearchPaper({
         isLiked={collectionPapersIds.has(paper.id as string)}
         bibTeX={generateBibTeX(paper)}
         isLoading={isLikingPaper}
+        isLikeVisible={isLikeVisible}
       />
     );
   }

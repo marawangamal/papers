@@ -8,9 +8,14 @@ export type PaperBrowserProps = {
   papers: Tables<"vw_final_papers">[];
   searchParams: PaperSearchParams;
   collectionPapers?: Tables<"vw_final_collection_papers">[];
+  isLikeVisible?: boolean;
 };
 
-export function PaperBrowser({ papers, collectionPapers }: PaperBrowserProps) {
+export function PaperBrowser({
+  papers,
+  collectionPapers,
+  isLikeVisible,
+}: PaperBrowserProps) {
   const collectionPapersIds = new Set(
     collectionPapers?.map((paper) => paper.id as string)
   );
@@ -25,6 +30,7 @@ export function PaperBrowser({ papers, collectionPapers }: PaperBrowserProps) {
               paper={paper}
               mode="expanded"
               collectionPapersIds={collectionPapersIds}
+              isLikeVisible={isLikeVisible}
             />
           ))}
         </Stack>

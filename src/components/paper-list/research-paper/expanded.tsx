@@ -31,17 +31,21 @@ function LatexText({
 export type ResearchPaperExpandedProps = {
   paper: Tables<"vw_final_papers"> | Tables<"vw_final_collection_papers">;
   // collectionPapersIds: Set<string>;
-  onLikeClick: (paper: Tables<"vw_final_papers">) => void;
+  onLikeClick?: (paper: Tables<"vw_final_papers">) => void;
   isLiked: boolean;
   bibTeX: string;
   isLoading?: boolean;
+  isStatsVisible?: boolean;
+  isLikeVisible?: boolean;
 };
 export function ResearchPaperExpanded({
   paper,
-  onLikeClick,
+  isLikeVisible,
   isLiked,
   bibTeX,
   isLoading,
+  isStatsVisible = false,
+  onLikeClick,
 }: ResearchPaperExpandedProps) {
   return (
     <TPaper p="lg" radius="md">
@@ -65,27 +69,29 @@ export function ResearchPaperExpanded({
         {paper.abstract && <LatexText text={paper.abstract} />}
 
         <Group mt="md" justify="space-between" align="center">
-          <Group gap="xs">
-            <Tooltip label={paper.view_count + " views"}>
-              <Group gap={6} style={{ color: "var(--mantine-color-dimmed)" }}>
-                <IconEye size={16} stroke={1.5} />
-                <Text size="sm" span>
-                  {paper.view_count || 0}
-                </Text>
-              </Group>
-            </Tooltip>
-            <Tooltip label={paper.like_count + " likes"}>
-              <Group
-                gap={6}
-                style={{ color: "var(--mantine-color-red-filled)" }}
-              >
-                <IconHeartFilled size={16} stroke={1.5} />
-                <Text size="sm" span>
-                  {paper.like_count || 0}
-                </Text>
-              </Group>
-            </Tooltip>
-          </Group>
+          {isStatsVisible && (
+            <Group gap="xs">
+              <Tooltip label={paper.view_count + " views"}>
+                <Group gap={6} style={{ color: "var(--mantine-color-dimmed)" }}>
+                  <IconEye size={16} stroke={1.5} />
+                  <Text size="sm" span>
+                    {paper.view_count || 0}
+                  </Text>
+                </Group>
+              </Tooltip>
+              <Tooltip label={paper.like_count + " likes"}>
+                <Group
+                  gap={6}
+                  style={{ color: "var(--mantine-color-red-filled)" }}
+                >
+                  <IconHeartFilled size={16} stroke={1.5} />
+                  <Text size="sm" span>
+                    {paper.like_count || 0}
+                  </Text>
+                </Group>
+              </Tooltip>
+            </Group>
+          )}
 
           <Group gap="md">
             {paper.pdf_url && (
@@ -137,7 +143,7 @@ export function ResearchPaperExpanded({
                 )}
               </CopyButton>
             </Tooltip>
-            {onLikeClick && (
+            {isLikeVisible && onLikeClick && (
               <Button
                 onClick={() => onLikeClick(paper)}
                 loading={isLoading}
