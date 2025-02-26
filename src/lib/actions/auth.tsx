@@ -8,7 +8,9 @@ export interface EmailAuthFormData {
   password: string;
 }
 
-const SITE_URL = process.env.VERCEL_URL as string;
+const SITE_URL = process.env.NEXT_PUBLIC_VERCEL_URL
+  ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
+  : (process.env.NEXT_PUBLIC_URL as string);
 
 export interface SignupEmailFormData extends EmailAuthFormData {
   first_name?: string;
@@ -53,7 +55,11 @@ export async function signupWithEmail({
   });
 
   if (error) {
-    return redirect(`${ENDPOINTS.login}?message=` + error.message);
+    return redirect(
+      `${ENDPOINTS.login}?message=${
+        error.message || "An unexpected error occurred"
+      }`
+    );
   }
   return redirect(
     `${ENDPOINTS.emailVerificationSentPage}?email=${encodeURIComponent(email)}`
