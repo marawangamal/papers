@@ -13,6 +13,7 @@ import {
 import {
   IconBrandGithub,
   IconCheck,
+  IconEye,
   IconFileText,
   IconHeart,
   IconHeartFilled,
@@ -130,8 +131,33 @@ export function PaperBrowser({ papers, collectionPapers }: PaperBrowserProps) {
                 </Text>
                 {paper.abstract && <LatexText text={paper.abstract} />}
 
-                <Group mt="sm" justify="space-between">
-                  <Group>
+                <Group mt="md" justify="space-between" align="center">
+                  <Group gap="xs">
+                    <Tooltip label={paper.view_count + " views"}>
+                      <Group
+                        gap={6}
+                        style={{ color: "var(--mantine-color-dimmed)" }}
+                      >
+                        <IconEye size={16} stroke={1.5} />
+                        <Text size="sm" span>
+                          {paper.view_count || 0}
+                        </Text>
+                      </Group>
+                    </Tooltip>
+                    <Tooltip label={paper.like_count + " likes"}>
+                      <Group
+                        gap={6}
+                        style={{ color: "var(--mantine-color-red-filled)" }}
+                      >
+                        <IconHeartFilled size={16} stroke={1.5} />
+                        <Text size="sm" span>
+                          {paper.like_count || 0}
+                        </Text>
+                      </Group>
+                    </Tooltip>
+                  </Group>
+
+                  <Group gap="md">
                     {paper.pdf_url && (
                       <Button
                         component="a"
@@ -181,8 +207,6 @@ export function PaperBrowser({ papers, collectionPapers }: PaperBrowserProps) {
                         )}
                       </CopyButton>
                     </Tooltip>
-                  </Group>
-                  <Group>
                     {collectionPapers && (
                       <Button
                         onClick={() => handlePaperLikeClick(paper)}

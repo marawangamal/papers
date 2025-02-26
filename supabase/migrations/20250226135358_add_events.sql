@@ -115,26 +115,3 @@ create trigger on_collection_paper_insert
 create trigger on_collection_paper_delete
   after delete on public.collection_papers
   for each row execute procedure public.handle_collection_paper_delete();
-
-
-CREATE OR REPLACE VIEW vw_final_event_log_summary AS
-WITH cte_event_log_summary AS NOT MATERIALIZED (
-SELECT 
-    paper_id,
-    COUNT(*) FILTER (WHERE event = 'view') AS view_count,
-    COUNT(*) FILTER (WHERE event = 'like') AS like_count,
-    COUNT(*) FILTER (WHERE event = 'unlike') AS unlike_count,
-    COUNT(*) AS total_events,
-    MAX(created_at) FILTER (WHERE event = 'view') AS last_viewed,
-    MAX(created_at) FILTER (WHERE event = 'like') AS last_liked
-FROM 
-    event_log
-WHERE 
-    paper_id IS NOT NULL
-GROUP BY 
-    paper_id
-)
-SELECT 
-  *, 
-  like_count - unlike_count as net_like_count
-FROM cte_event_log_summary;

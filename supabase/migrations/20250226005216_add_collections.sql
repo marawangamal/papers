@@ -108,15 +108,3 @@ USING (
 
 -- No update policy needed for collection_papers since there are no fields to update
 -- (only collection_id and paper_id which are the primary key)
-
-
-
-CREATE OR REPLACE VIEW public.vw_final_collection_papers AS
-SELECT 
-  p.*, 
-  c.name as collection_name, 
-  c.id as collection_id, 
-  c.user_id 
-FROM collections c 
-LEFT JOIN collection_papers cp ON c.id = cp.collection_id
-LEFT JOIN papers p ON p.id = cp.paper_id;
