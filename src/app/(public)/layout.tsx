@@ -1,4 +1,5 @@
 // app/(public)/layout.tsx
+import SignInButton from "@/components/buttons/sign-in";
 import { ColorSchemeToggle } from "@/components/color-scheme-toggle";
 import { Box, Container, Group, Stack, Text } from "@mantine/core";
 import { IconBrain } from "@tabler/icons-react";
@@ -25,7 +26,10 @@ export default function PublicLayout({
                 Paperz
               </Text>
             </Group>
-            <ColorSchemeToggle />
+            <Group>
+              <SignInButton />
+              <ColorSchemeToggle />
+            </Group>
           </Group>
         </Group>
       </Container>

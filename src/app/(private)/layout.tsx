@@ -3,7 +3,6 @@ import { createClient } from "@/utils/supabase/server";
 import { Group } from "@mantine/core";
 import { redirect } from "next/navigation";
 
-// app/(protected)/layout.tsx
 export default async function ProtectedLayout({
   children,
 }: {

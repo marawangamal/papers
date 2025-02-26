@@ -7,14 +7,14 @@ import { Suspense } from "react";
 import { getStringList } from "@/utils/misc";
 import ScrollableContainerPinnedHeader from "@/layouts/scrollable-container";
 
-export default async function PageContainer({
+export default async function SearchPage({
   searchParams,
 }: {
   searchParams: Promise<PaperBrowserProps["searchParams"]>;
 }) {
   const awaitedSearchParams = await searchParams;
   return (
-    <Stack style={{ height: "100%", overflow: "hidden" }}>
+    <Stack h="100%" w="100%" style={{ height: "100%", overflow: "hidden" }}>
       <Suspense
         fallback={
           <ScrollableContainerPinnedHeader

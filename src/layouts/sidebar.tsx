@@ -1,12 +1,5 @@
 "use client";
-import {
-  IconCirclePlus,
-  IconFolder,
-  IconHome2,
-  IconLogout,
-  IconSettings,
-  IconWorld,
-} from "@tabler/icons-react";
+import { IconHome2, IconLogout, IconSearch } from "@tabler/icons-react";
 import {
   Center,
   Stack,
@@ -26,10 +19,10 @@ const mockdata = [
   // { icon: IconLayoutGrid, label: "Browse", path: "/browse" },
   // { icon: IconPencil, label: "Create", path: "/create" },
   { icon: IconHome2, label: "Home", path: "/dashboard" },
-  { icon: IconCirclePlus, label: "Create", path: "/create" },
-  { icon: IconFolder, label: "Browse", path: "/browse" },
-  { icon: IconWorld, label: "Community", path: "/community" },
-  { icon: IconSettings, label: "Settings", path: "/settings" },
+  // { icon: IconCirclePlus, label: "Create", path: "/create" },
+  { icon: IconSearch, label: "Search", path: "/search" },
+  // { icon: IconWorld, label: "Community", path: "/community" },
+  // { icon: IconSettings, label: "Settings", path: "/settings" },
 ];
 
 export function NavbarMinimal() {
