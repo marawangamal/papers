@@ -39,6 +39,7 @@ export async function signupWithEmail({
   const supabase = await createClient();
   const emaileRedirectTo = new URL(SITE_URL);
   emaileRedirectTo.pathname = ENDPOINTS.emailVerificationCallback;
+  emaileRedirectTo.searchParams.set("next", ENDPOINTS.dashboard);
   const { error } = await supabase.auth.signUp({
     email,
     password,
@@ -55,7 +56,7 @@ export async function signupWithEmail({
     return redirect(`${ENDPOINTS.login}?message=` + error.message);
   }
   return redirect(
-    `${ENDPOINTS.emailVerificationSent}?email=${encodeURIComponent(email)}`
+    `${ENDPOINTS.emailVerificationSentPage}?email=${encodeURIComponent(email)}`
   );
 }
 
@@ -80,11 +81,11 @@ export async function resendVerificationEmail({ email }: { email: string }) {
 
   if (error) {
     return redirect(
-      `${ENDPOINTS.emailVerificationSent}?message=${error.message}`
+      `${ENDPOINTS.emailVerificationSentPage}?message=${error.message}`
     );
   }
   return redirect(
-    `${ENDPOINTS.emailVerificationSent}?email=${encodeURIComponent(email)}`
+    `${ENDPOINTS.emailVerificationSentPage}?email=${encodeURIComponent(email)}`
   );
 }
 
@@ -98,10 +99,12 @@ export async function resetPassword({ email }: { email: string }) {
   });
 
   if (error) {
-    return redirect(`${ENDPOINTS.resetPasswordSent}?message=${error.message}`);
+    return redirect(
+      `${ENDPOINTS.resetPasswordSentPage}?message=${error.message}`
+    );
   }
   return redirect(
-    `${ENDPOINTS.resetPasswordSent}?message=Check your email for a password reset link.`
+    `${ENDPOINTS.resetPasswordSentPage}?message=Check your email for a password reset link.`
   );
 }
 
@@ -112,9 +115,7 @@ export async function updatePassword({ password }: { password: string }) {
   });
 
   if (error) {
-    return redirect(
-      `${ENDPOINTS.updatePasswordCallback}?message=${error.message}`
-    );
+    return redirect(`${ENDPOINTS.updatePasswordPage}?message=${error.message}`);
   }
 
   return redirect(ENDPOINTS.dashboard);
