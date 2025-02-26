@@ -1,3 +1,4 @@
+import { ENDPOINTS } from "@/config/const";
 import { NavbarMinimal } from "@/layouts/sidebar-v2";
 import { createClient } from "@/utils/supabase/server";
 import { Group } from "@mantine/core";
@@ -14,7 +15,7 @@ export default async function ProtectedLayout({
   } = await supabase.auth.getUser();
 
   if (!user) {
-    redirect("/login");
+    redirect(ENDPOINTS.login);
   }
 
   return (

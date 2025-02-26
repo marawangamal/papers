@@ -15,6 +15,7 @@ import { IconAlertCircle } from "@tabler/icons-react";
 import { loginWithEmail, signupWithEmail } from "@/lib/actions/auth";
 import { useForm } from "@mantine/form";
 import Link from "next/link";
+import { ENDPOINTS } from "@/config/const";
 interface FormValues {
   email: string;
   password: string;
@@ -116,7 +117,7 @@ export default function AuthForm({ message, error }: AuthFormProps) {
             {form.values.mode === "login" && (
               <Anchor
                 component={Link}
-                href="/reset-password"
+                href={ENDPOINTS.resetPasswordPage}
                 size="sm"
                 ta="right"
               >

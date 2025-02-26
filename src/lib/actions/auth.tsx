@@ -1,5 +1,5 @@
 "use server";
-import { config } from "@/config/const";
+import { ENDPOINTS } from "@/config/const";
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 
@@ -7,6 +7,8 @@ export interface EmailAuthFormData {
   email: string;
   password: string;
 }
+
+const SITE_URL = process.env.VERCEL_URL as string;
 
 export interface SignupEmailFormData extends EmailAuthFormData {
   first_name?: string;
@@ -22,10 +24,10 @@ export async function loginWithEmail({ email, password }: EmailAuthFormData) {
   });
 
   if (error) {
-    return redirect("/login?message=" + error.message);
+    return redirect(`${ENDPOINTS.login}?message=${error.message}`);
   }
 
-  return redirect("/dashboard");
+  return redirect(ENDPOINTS.dashboard);
 }
 
 export async function signupWithEmail({
@@ -35,7 +37,8 @@ export async function signupWithEmail({
   last_name,
 }: SignupEmailFormData) {
   const supabase = await createClient();
-
+  const emaileRedirectTo = new URL(SITE_URL);
+  emaileRedirectTo.pathname = ENDPOINTS.emailVerificationCallback;
   const { error } = await supabase.auth.signUp({
     email,
     password,
@@ -44,70 +47,61 @@ export async function signupWithEmail({
         first_name,
         last_name,
       },
-      emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`,
+      emailRedirectTo: emaileRedirectTo.toString(),
     },
   });
 
   if (error) {
-    return redirect(`${config.loginUrl}?message=` + error.message);
+    return redirect(`${ENDPOINTS.login}?message=` + error.message);
   }
-
-  return redirect("/verify/email?email=" + encodeURIComponent(email));
+  return redirect(
+    `${ENDPOINTS.emailVerificationSent}?email=${encodeURIComponent(email)}`
+  );
 }
 
 export async function logout() {
   const supabase = await createClient();
   await supabase.auth.signOut();
-  return redirect("/");
+  return redirect(ENDPOINTS.root);
 }
 
 export async function resendVerificationEmail({ email }: { email: string }) {
   const supabase = await createClient();
+  const emaileRedirectTo = new URL(SITE_URL);
+  emaileRedirectTo.pathname = ENDPOINTS.emailVerificationCallback;
 
   const { error } = await supabase.auth.resend({
     type: "signup",
     email,
     options: {
-      emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`,
+      emailRedirectTo: emaileRedirectTo.toString(),
     },
   });
 
   if (error) {
-    return redirect("/verify?message=" + error.message);
+    return redirect(
+      `${ENDPOINTS.emailVerificationSent}?message=${error.message}`
+    );
   }
-
-  return redirect("/verify/email?email=" + encodeURIComponent(email));
-}
-
-// Optional: Add email verification handling if needed
-export async function handleEmailVerification(token: string) {
-  const supabase = await createClient();
-
-  const { error } = await supabase.auth.verifyOtp({
-    token_hash: token,
-    type: "email",
-  });
-
-  if (error) {
-    return redirect("/verify/email?message=" + error.message);
-  }
-
-  return redirect("/dashboard");
+  return redirect(
+    `${ENDPOINTS.emailVerificationSent}?email=${encodeURIComponent(email)}`
+  );
 }
 
 export async function resetPassword({ email }: { email: string }) {
   const supabase = await createClient();
+  const redirectTo = new URL(SITE_URL);
+  redirectTo.pathname = ENDPOINTS.resetPasswordCallback;
 
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/reset?next=/update-password`,
+    redirectTo: redirectTo.toString(), // this redirects to the update password page
   });
 
   if (error) {
-    return redirect("/reset-password?message=" + error.message);
+    return redirect(`${ENDPOINTS.resetPasswordSent}?message=${error.message}`);
   }
-
-  redirect(
-    "/reset-password?message=Check your email for a password reset link."
+  return redirect(
+    `${ENDPOINTS.resetPasswordSent}?message=Check your email for a password reset link.`
   );
 }
 
@@ -118,8 +112,10 @@ export async function updatePassword({ password }: { password: string }) {
   });
 
   if (error) {
-    return redirect("/update-password?message=" + error.message);
+    return redirect(
+      `${ENDPOINTS.updatePasswordCallback}?message=${error.message}`
+    );
   }
 
-  return redirect("/dashboard");
+  return redirect(ENDPOINTS.dashboard);
 }
