@@ -18,7 +18,7 @@ CREATE TABLE "public"."event_log" (
     -- Foreign key constraints
     PRIMARY KEY ("id"),
     FOREIGN KEY ("paper_id") REFERENCES papers(id) ON DELETE SET NULL,
-    FOREIGN KEY ("user_id") REFERENCES auth.users(id) ON DELETE SET NULL,
+    FOREIGN KEY ("user_id") REFERENCES auth.users(id) ON DELETE SET NULL
 );
 
 
@@ -41,7 +41,13 @@ create function public.handle_collection_paper_insert()
     language plpgsql
     security definer set search_path = ''
     as $$
+    declare
+        collection_name text;
     begin
+
+        select c.name INTO collection_name
+        from public.collections c
+        where c.id = NEW.collection_id;
 
         INSERT INTO public.event_log (
             event,
@@ -54,7 +60,8 @@ create function public.handle_collection_paper_insert()
             c.user_id,
             NEW.paper_id,
             jsonb_build_object(
-                'collection_id', NEW.collection_id
+                'collection_id', NEW.collection_id,
+                'collection_name', collection_name
             )
         FROM public.collections c
         WHERE c.id = NEW.collection_id;
@@ -69,7 +76,14 @@ create function public.handle_collection_paper_delete()
     language plpgsql
     security definer set search_path = ''
     as $$
+    declare
+        collection_name text;
     begin
+
+        select c.name INTO collection_name
+        from public.collections c
+        where c.id = NEW.collection_id;
+
         -- Insert an 'unlike' event into the event log
         INSERT INTO public.event_log (
             event,
@@ -82,7 +96,8 @@ create function public.handle_collection_paper_delete()
             c.user_id,
             OLD.paper_id,
             jsonb_build_object(
-                'collection_id', OLD.collection_id
+                'collection_id', OLD.collection_id,
+                'collection_name', collection_name
             )
         FROM public.collections c
         WHERE c.id = OLD.collection_id;
@@ -100,104 +115,6 @@ create trigger on_collection_paper_insert
 create trigger on_collection_paper_delete
   after delete on public.collection_papers
   for each row execute procedure public.handle_collection_paper_delete();
-
-
-
-
-
--- -- Function to handle the automatic logging of 'like' events
--- CREATE OR REPLACE FUNCTION public.log_paper_like()
--- RETURNS TRIGGER
--- LANGUAGE plpgsql
--- SECURITY DEFINER
--- SET search_path = ''
--- AS $$
--- DECLARE
---     collection_name text;
--- BEGIN
---     -- Get the collection name
---     SELECT c.name INTO collection_name
---     FROM public.collection c
---     WHERE c.id = NEW.collection_id;
-    
---     -- Only log 'like' events for the "Liked" collection
---     IF collection_name = 'Liked' THEN
---         -- Insert a 'like' event into the event log
---         INSERT INTO public.event_log (
---             event,
---             user_id,
---             paper_id,
---             metadata
---         )
---         SELECT
---             'like'::t_event,
---             c.user_id,
---             NEW.paper_id,
---             jsonb_build_object(
---                 'collection_id', NEW.collection_id,
---                 'collection_name', collection_name
---             )
---         FROM public.collections c
---         WHERE c.id = NEW.collection_id;
---     END IF;
-    
---     RETURN NEW;
--- END;
--- $$;
-
--- -- Function to handle the automatic logging of 'unlike' events
--- CREATE OR REPLACE FUNCTION public.log_paper_unlike()
--- RETURNS TRIGGER
--- LANGUAGE plpgsql
--- SECURITY DEFINER
--- SET search_path = ''
--- AS $$
--- DECLARE
---     collection_name text;
--- BEGIN
---     -- Get the collection name
---     SELECT c.name INTO collection_name
---     FROM public.collections c
---     WHERE c.id = OLD.collection_id;
-    
---     -- Only log 'unlike' events for the "Liked" collection
-    -- IF collection_name = 'Liked' THEN
-    --     -- Insert an 'unlike' event into the event log
-    --     INSERT INTO public.event_log (
-    --         event,
-    --         user_id,
-    --         paper_id,
-    --         metadata
-    --     )
-    --     SELECT
-    --         'unlike'::t_event,
-    --         c.user_id,
-    --         OLD.paper_id,
-    --         jsonb_build_object(
-    --             'collection_id', OLD.collection_id,
-    --             'collection_name', collection_name,
-    --             'previous_action', 'like'
-    --         )
-    --     FROM public.collections c
-    --     WHERE c.id = OLD.collection_id;
-    -- END IF;
-    
---     RETURN OLD;
--- END;
--- $$;
-
--- Trigger to automatically log 'like' events when papers are added to collections
--- CREATE TRIGGER after_collection_paper_insert
--- AFTER INSERT ON public.collection_papers
--- FOR EACH ROW
--- EXECUTE PROCEDURE public.log_paper_like();
-
-
--- CREATE TRIGGER after_collection_paper_delete
--- AFTER DELETE ON public.collection_papers
--- FOR EACH ROW
--- EXECUTE PROCEDURE public.log_paper_unlike();
-
 
 
 CREATE OR REPLACE VIEW vw_final_event_log_summary AS
@@ -220,4 +137,4 @@ GROUP BY
 SELECT 
   *, 
   like_count - unlike_count as net_like_count
-FROM cte_event_log_summary
+FROM cte_event_log_summary;
