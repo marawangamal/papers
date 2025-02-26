@@ -15,14 +15,18 @@ import {
   IconCheck,
   IconFileText,
   IconHeart,
+  IconHeartFilled,
   IconQuoteFilled,
 } from "@tabler/icons-react";
 import { Tables } from "@/types/database.types";
 import { PaperSearchParams } from "@/lib/actions/papers";
 import katex from "katex";
 import "katex/dist/katex.min.css";
-import { useTransition } from "react";
-import { addToLikedCollection } from "@/lib/actions/collections";
+import { useState } from "react";
+import {
+  addToLikedCollection,
+  removeFromLikedCollection,
+} from "@/lib/actions/collections";
 
 const removeSpecialChars = (text: string) =>
   text.replace(/[^a-zA-Z0-9]/g, "").toLowerCase();
@@ -52,7 +56,7 @@ function generateBibTeX(paper: Tables<"vw_final_papers">) {
 export type PaperBrowserProps = {
   papers: Tables<"vw_final_papers">[];
   searchParams: PaperSearchParams;
-  is_like_enabled?: boolean;
+  collectionPapers?: Tables<"vw_final_collection_papers">[];
 };
 
 function parseLatex(text: string): string {
@@ -77,13 +81,26 @@ function LatexText({
   return <Text {...props} dangerouslySetInnerHTML={{ __html: parsedText }} />;
 }
 
-export function PaperBrowser({ papers, is_like_enabled }: PaperBrowserProps) {
-  const [isLiking, startTransition] = useTransition();
-  const handleLike = (paper: Tables<"vw_final_papers">) => {
-    startTransition(async () => {
+export function PaperBrowser({ papers, collectionPapers }: PaperBrowserProps) {
+  const [isLikingPaper, setIsLikingPaper] = useState<
+    Tables<"vw_final_papers">["id"][]
+  >([]);
+
+  // Create a Map of collectionPapers for faster lookup
+  const collectionPapersMap = new Map(
+    collectionPapers?.map((paper) => [paper.id, paper]) || []
+  );
+
+  const handlePaperLikeClick = async (paper: Tables<"vw_final_papers">) => {
+    setIsLikingPaper((prev) => [...prev, paper.id]);
+    if (collectionPapersMap.has(paper.id)) {
+      await removeFromLikedCollection({ paper_id: paper.id as string });
+    } else {
       await addToLikedCollection({ paper_id: paper.id as string });
-    });
+    }
+    setIsLikingPaper((prev) => prev.filter((id) => id !== paper.id));
   };
+
   return (
     <Stack gap="xl" h="100%">
       {papers.length > 0 ? (
@@ -166,16 +183,26 @@ export function PaperBrowser({ papers, is_like_enabled }: PaperBrowserProps) {
                     </Tooltip>
                   </Group>
                   <Group>
-                    {is_like_enabled && (
+                    {collectionPapers && (
                       <Button
-                        onClick={() => handleLike(paper)}
-                        loading={isLiking}
-                        leftSection={<IconHeart size={16} />}
-                        variant="light"
-                        color="gray"
+                        onClick={() => handlePaperLikeClick(paper)}
+                        loading={isLikingPaper.includes(paper.id)}
+                        leftSection={
+                          collectionPapersMap.has(paper.id) ? (
+                            <IconHeartFilled size={16} />
+                          ) : (
+                            <IconHeart size={16} />
+                          )
+                        }
+                        variant={
+                          collectionPapersMap.has(paper.id)
+                            ? "light"
+                            : "outline"
+                        }
+                        color="red"
                         size="sm"
                       >
-                        Like
+                        {collectionPapersMap.has(paper.id) ? "Liked" : "Like"}
                       </Button>
                     )}
                   </Group>
