@@ -79,6 +79,8 @@ async function PaperListAsync({
       papers={papers}
       searchParams={searchParams}
       collectionPapers={collectionPapers}
+      isLikeVisible
+      isStatsVisible
     />
   );
 }

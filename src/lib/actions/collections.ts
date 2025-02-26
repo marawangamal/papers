@@ -5,19 +5,6 @@ import { revalidateTag, unstable_cache } from "next/cache";
 
 // utils/supabase-server.ts
 export async function getCollectionPapers() {
-    // const supabase = await createClient();
-    // const user = await supabase.auth.getUser();
-    // if (!user || !user.data?.user?.id) {
-    //     throw new Error("User not found");
-    // }
-    // const { data, error } = await supabase
-    //     .from("vw_final_collection_papers")
-    //     .select("*")
-    //     .eq("user_id", user.data.user.id);
-    // if (error) {
-    //     throw error;
-    // }
-    // return data;
     const supabase = await createClient();
     const user = await supabase.auth.getUser();
     if (!user || !user.data?.user?.id) {
@@ -29,7 +16,8 @@ export async function getCollectionPapers() {
             const { data, error } = await supabase
                 .from("vw_final_collection_papers")
                 .select("*")
-                .eq("user_id", userId);
+                .eq("user_id", userId)
+                .order("added_at", { ascending: false });
             if (error) {
                 throw error;
             }

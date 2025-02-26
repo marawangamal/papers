@@ -56,7 +56,8 @@ SELECT
     p.*, 
     c.name as collection_name, 
     c.id as collection_id, 
-    c.user_id 
+    c.user_id,
+    cp.created_at as added_at
 FROM collection_papers cp 
 LEFT JOIN collections c ON c.id = cp.collection_id
 LEFT JOIN vw_final_papers p ON p.id = cp.paper_id;
