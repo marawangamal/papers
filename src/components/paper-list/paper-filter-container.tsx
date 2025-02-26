@@ -19,7 +19,7 @@ export default function PaperFilterContainer({
   searchParams: PaperSearchParams;
   isLoading?: boolean;
 }) {
-  const { handleSearchClick } = usePapers();
+  const { isRedirecting, handleSearchClick } = usePapers();
 
   return (
     <PaperFilters
@@ -36,7 +36,7 @@ export default function PaperFilterContainer({
       }}
       initialHasCode={searchParams.has_code || false}
       onSearchClick={handleSearchClick}
-      isLoading={isLoading}
+      isLoading={isLoading || isRedirecting}
     />
   );
 }
