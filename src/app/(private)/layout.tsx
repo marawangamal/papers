@@ -1,4 +1,4 @@
-import { NavbarMinimal } from "@/layouts/sidebar";
+import { NavbarMinimal } from "@/layouts/sidebar-v2";
 import { createClient } from "@/utils/supabase/server";
 import { Group } from "@mantine/core";
 import { redirect } from "next/navigation";

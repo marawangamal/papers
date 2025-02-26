@@ -1,0 +1,78 @@
+.tc-container {
+  background-color: #f2f2f2;
+
+  @mixin dark {
+    background-color: var(--mantine-color-dark-7);
+  }
+}
+
+.tc-paper {
+  background-color: #f2f2f2;
+  border: 1px solid var(--mantine-color-gray-2);
+
+  @mixin dark {
+    background-color: var(--mantine-color-dark-7);
+    border: 1px solid var(--mantine-color-dark-3);
+  }
+}
+
+.tc-section-white {
+  background-color: #fff;
+
+  @mixin dark {
+    background-color: var(--mantine-color-dark-7);
+  }
+}
+
+.tc-section-dark {
+  background-color: var(--mantine-color-dark-7);
+}
+
+.plan-card {
+  width: 320px;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+  border-radius: var(--mantine-radius-md);
+  background-color: var(--mantine-color-white);
+
+  @mixin dark {
+    background-color: var(--mantine-color-dark-6);
+  }
+}
+
+.plan-card.pro {
+  transform: scale(1.05);
+  background: linear-gradient(
+    135deg,
+    var(--mantine-color-blue-0),
+    var(--mantine-color-blue-0),
+    var(--mantine-color-blue-1),
+    var(--mantine-color-blue-1)
+  );
+
+  @mixin dark {
+    background: var(--mantine-color-dark-6);
+  }
+}
+
+.plan-badge {
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.plan-badge.free {
+  color: var(--mantine-color-gray-7);
+
+  @mixin dark {
+    color: var(--mantine-color-dark-1);
+  }
+}
+
+.plan-badge.pro {
+  background-color: var(--mantine-color-blue-5);
+  color: white;
+
+  @mixin dark {
+    background-color: var(--mantine-color-blue-4);
+    color: var(--mantine-color-white);
+  }
+}

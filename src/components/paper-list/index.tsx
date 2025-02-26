@@ -23,6 +23,7 @@ export function PaperBrowser({ papers, collectionPapers }: PaperBrowserProps) {
             <ResearchPaper
               key={index}
               paper={paper}
+              mode="expanded"
               collectionPapersIds={collectionPapersIds}
             />
           ))}

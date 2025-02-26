@@ -1,39 +1,23 @@
 "use client";
-import {
-  IconHeart,
-  IconHome2,
-  IconLogout,
-  IconSearch,
-} from "@tabler/icons-react";
-import {
-  Center,
-  Stack,
-  Box,
-  useMantineTheme,
-  useMantineColorScheme,
-} from "@mantine/core";
+import { IconHome2, IconLogout, IconSearch } from "@tabler/icons-react";
+import { Center, Stack, Box, useMantineTheme } from "@mantine/core";
 import { Logo } from "@/lib/icons/logo-shape";
 import { usePathname } from "next/navigation";
 import { logout } from "@/lib/actions/auth";
 import { useTransition } from "react";
-import { useMounted } from "@mantine/hooks";
 import { NavbarLink } from "./nav-link";
 import { ColorSchemeToggle } from "@/components/color-scheme-toggle";
-
-const mockdata = [
-  // { icon: IconLayoutGrid, label: "Browse", path: "/browse" },
-  // { icon: IconPencil, label: "Create", path: "/create" },
-  { icon: IconHome2, label: "Home", path: "/dashboard" },
-  // { icon: IconCirclePlus, label: "Create", path: "/create" },
-  { icon: IconSearch, label: "Search", path: "/search" },
-  { icon: IconHeart, label: "Community", path: "/liked-papers" },
-  // { icon: IconSettings, label: "Settings", path: "/settings" },
-];
+import TPaper from "@/components/ui/tpaper";
 
 export function NavbarMinimal() {
   const pathname = usePathname();
   const [isLoggingOut, startLogout] = useTransition();
   const theme = useMantineTheme();
+
+  const mockdata = [
+    { icon: IconHome2, label: "Home", path: "/dashboard" },
+    { icon: IconSearch, label: "Community", path: "/search" },
+  ];
 
   const handleLogout = () =>
     startLogout(() => {
@@ -44,23 +28,18 @@ export function NavbarMinimal() {
     <NavbarLink {...link} key={link.label} active={pathname === link.path} />
   ));
 
-  const { colorScheme } = useMantineColorScheme();
-  const isMounted = useMounted();
-
-  return isMounted ? (
-    <Box
-      component="nav"
+  return (
+    <TPaper
+      // component="nav"
       style={{
         width: 80,
         padding: theme.spacing.md,
         height: "100%",
         display: "flex",
         flexDirection: "column",
-        backgroundColor:
-          colorScheme === "dark" ? theme.colors.dark[7] : "#F7F7F7",
-        borderRight: `1px solid ${
-          colorScheme === "dark" ? theme.colors.dark[3] : theme.colors.gray[2]
-        }`,
+        borderLeft: "transparent",
+        borderTop: "transparent",
+        borderBottom: "transparent",
       }}
     >
       <Center>
@@ -83,6 +62,6 @@ export function NavbarMinimal() {
           onClick={handleLogout}
         />
       </Stack>
-    </Box>
-  ) : null;
+    </TPaper>
+  );
 }

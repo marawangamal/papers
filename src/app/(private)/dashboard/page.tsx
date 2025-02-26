@@ -18,30 +18,12 @@ export default async function LikePapersPage() {
         <Title order={3}>Trending Papers</Title>
         <Group align="center" style={{ overflowX: "auto", flexWrap: "nowrap" }}>
           {trendingPapers.map((paper) => (
-            <div
+            <ResearchPaper
               key={paper.id}
-              style={{ minWidth: "300px", maxWidth: "400px", flex: "0 0 auto" }}
-            >
-              <h3
-                style={{
-                  whiteSpace: "nowrap",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                }}
-              >
-                {paper.title}
-              </h3>
-              <p
-                style={{
-                  display: "-webkit-box",
-                  WebkitLineClamp: "3",
-                  WebkitBoxOrient: "vertical",
-                  overflow: "hidden",
-                }}
-              >
-                {paper.abstract}
-              </p>
-            </div>
+              paper={paper}
+              mode="summary"
+              collectionPapersIds={collectionPapersIds}
+            />
           ))}
         </Group>
       </Stack>
@@ -51,6 +33,7 @@ export default async function LikePapersPage() {
         {collectionPapers.map((paper) => (
           <ResearchPaper
             key={paper.id}
+            mode="collapsed"
             paper={paper}
             collectionPapersIds={collectionPapersIds}
           />
