@@ -16,7 +16,7 @@ export function NavbarMinimal() {
 
   const mockdata = [
     { icon: IconHome2, label: "Home", path: "/dashboard" },
-    { icon: IconSearch, label: "Community", path: "/search" },
+    { icon: IconSearch, label: "Search", path: "/search" },
   ];
 
   const handleLogout = () =>

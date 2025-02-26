@@ -1,34 +1,15 @@
 "use client";
-import TPaper from "@/components/ui/tpaper";
 import React from "react";
 import { ResearchPaperExpandedProps } from "./expanded";
+import { Card, Text, Title } from "@mantine/core";
 
 export function ResearchPaperSummary({ paper }: ResearchPaperExpandedProps) {
   return (
-    <TPaper
-      style={{ minWidth: "300px", maxWidth: "400px", flex: "0 0 auto" }}
-      p="md"
-      radius="md"
-    >
-      <h3
-        style={{
-          whiteSpace: "nowrap",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-        }}
-      >
-        {paper.title}
-      </h3>
-      <p
-        style={{
-          display: "-webkit-box",
-          WebkitLineClamp: "3",
-          WebkitBoxOrient: "vertical",
-          overflow: "hidden",
-        }}
-      >
+    <Card p="md" radius="md" withBorder h="100%">
+      <Title size="md">{paper.title}</Title>
+      <Text size="sm" lineClamp={3} c="dimmed">
         {paper.abstract}
-      </p>
-    </TPaper>
+      </Text>
+    </Card>
   );
 }

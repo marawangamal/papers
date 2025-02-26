@@ -1,7 +1,8 @@
 import { ResearchPaper } from "@/components/paper-list/research-paper";
+import TPaper from "@/components/ui/tpaper";
 import { getCollectionPapers } from "@/lib/actions/collections";
 import { getTrendingPapers } from "@/lib/actions/papers";
-import { Group, Stack, Title } from "@mantine/core";
+import { Box, Group, Stack, Title } from "@mantine/core";
 import React from "react";
 
 export default async function LikePapersPage() {
@@ -14,21 +15,38 @@ export default async function LikePapersPage() {
 
   return (
     <Stack h="100%" w="100%" style={{ overflow: "hidden" }}>
-      <Stack>
+      <Stack flex={1}>
         <Title order={3}>Trending Papers</Title>
-        <Group align="center" style={{ overflowX: "auto", flexWrap: "nowrap" }}>
-          {trendingPapers.map((paper) => (
-            <ResearchPaper
-              key={paper.id}
-              paper={paper}
-              mode="summary"
-              collectionPapersIds={collectionPapersIds}
-            />
-          ))}
-        </Group>
+        <TPaper radius="md" flex={1}>
+          <Group
+            h="100%"
+            p="sm"
+            align="center"
+            style={{ overflowX: "auto", flexWrap: "nowrap" }}
+          >
+            {trendingPapers.map((paper) => (
+              <Box
+                key={paper.id}
+                h="100%"
+                style={{
+                  minWidth: "300px",
+                  maxWidth: "400px",
+                  flex: "0 0 auto",
+                }}
+              >
+                <ResearchPaper
+                  key={paper.id}
+                  paper={paper}
+                  mode="summary"
+                  collectionPapersIds={collectionPapersIds}
+                />
+              </Box>
+            ))}
+          </Group>
+        </TPaper>
       </Stack>
 
-      <Stack flex={1} style={{ overflowY: "auto" }}>
+      <Stack flex={4} style={{ overflowY: "auto" }}>
         <Title order={3}>My Papers</Title>
         {collectionPapers.map((paper) => (
           <ResearchPaper

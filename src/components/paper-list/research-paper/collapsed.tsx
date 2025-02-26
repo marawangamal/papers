@@ -1,8 +1,7 @@
-import React from "react";
-import { ResearchPaperExpandedProps } from "./expanded";
-import { Button, Group, Text } from "@mantine/core";
-import { IconHeart } from "@tabler/icons-react";
+import { ActionIcon, Badge, Group, Stack, Text, Title } from "@mantine/core";
+import { IconTrash } from "@tabler/icons-react";
 import TPaper from "@/components/ui/tpaper";
+import { ResearchPaperExpandedProps } from "./expanded";
 
 export default function ResearchPaperCollapsed({
   paper,
@@ -10,38 +9,32 @@ export default function ResearchPaperCollapsed({
   isLoading,
 }: ResearchPaperExpandedProps) {
   return (
-    <TPaper key={paper.id} p="md" radius="md">
-      <Group mb="xs" justify="space-between">
-        <Text fw={700} size="md">
-          {paper.title}
-        </Text>
-
-        <Group>
-          <IconHeart
-            size={16}
-            stroke={1.5}
-            color="var(--mantine-color-red-filled)"
-          />
-          <Text size="sm" color="red">
-            {paper.like_count || 0}
-          </Text>
+    <TPaper p="sm" radius="md">
+      <Stack gap="xs">
+        <Group justify="space-between">
+          <Title size="md">{paper.title}</Title>
+          <Group gap="xs">
+            <Badge variant="light" color="blue">
+              {paper.abbrev}
+            </Badge>
+            <Badge variant="outline" color="gray">
+              {paper.year}
+            </Badge>
+            <ActionIcon
+              variant="subtle"
+              color="red"
+              size="xs"
+              loading={isLoading}
+              onClick={() => onLikeClick(paper)}
+            >
+              <IconTrash size={16} />
+            </ActionIcon>
+          </Group>
         </Group>
-      </Group>
-
-      <Text size="sm" c="dimmed">
-        Year: {paper.year || "N/A"}
-      </Text>
-
-      <Button
-        variant="outline"
-        color="red"
-        size="xs"
-        mt="md"
-        loading={isLoading}
-        onClick={() => onLikeClick(paper)}
-      >
-        Remove from Collection
-      </Button>
+        <Text size="sm" lineClamp={1} c="dimmed">
+          {paper.abstract}
+        </Text>
+      </Stack>
     </TPaper>
   );
 }

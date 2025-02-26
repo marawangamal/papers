@@ -71,6 +71,7 @@ export async function addToLikedCollection(
         throw error;
     }
     revalidateTag(`collections`);
+    revalidateTag(`papers`);
     return data;
 }
 
@@ -104,5 +105,6 @@ export async function removeFromLikedCollection(
         throw error;
     }
     revalidateTag(`collections`);
+    revalidateTag(`papers`);
     return data;
 }
