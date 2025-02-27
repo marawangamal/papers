@@ -8,7 +8,7 @@
 
 🌐 [**papers.app**](https://papers.app) | [**Follow on 𝕏**](https://x.com/mrremila)
 
-<img src="public/screenshot2.png" style="width: 400px;" />
+<img src="public/screenshot2.png" style="width: 800px;" />
 
 </div>
 
