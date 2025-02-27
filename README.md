@@ -1,6 +1,14 @@
-# [Papers.app](https://Papers.vercel.app/search/7546)
+#
 
-A semantic search engine for academic papers from major ML conferences.
+<div align="center">
+
+[<h1>📎 Papers.app</h1>](https://papers.app/search/7546)
+
+<i>Semantic search machine learning papers </i>
+
+<img src="public/screenshot2.png" style="width: 400px;" />
+
+</div>
 
 ## Supported conferences
 
@@ -12,6 +20,7 @@ A semantic search engine for academic papers from major ML conferences.
 ## Features
 
 - [x] Search papers using natural language queries
+- [x] Save papers to collection
 - [ ] Display similar papers (ability to click on a paper and see other papers similar to it)
 - [ ] Sort by year
 - [ ] Add citations count
@@ -118,3 +127,7 @@ if __name__ == '__main__':
 4. Run linting: `npm run lint`
 5. Commit your changes (`git commit -m 'Add some feature'`)
 6. Open a Pull Request
+
+## License
+
+The code in this repository is licensed under the MIT license, unless otherwise specified in the header of the file.
