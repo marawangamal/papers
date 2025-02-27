@@ -153,8 +153,9 @@ export default function LikePapersPage() {
         }}
         innerContainerProps={{
           size: "xl",
+          h: "100%",
           children: (
-            <Stack>
+            <Stack h="100%">
               <Group>
                 <IconHeart />
                 <Title order={3}>Liked</Title>
