@@ -65,10 +65,10 @@ function TimelineSection<T>({
     <Stack key={id} gap="lg" style={sectionStyle}>
       {/* Section header */}
       <Box
+        className="tc-section-white"
         style={{
           position: stickyHeader ? "sticky" : "relative",
           top: stickyHeader ? 0 : "auto",
-          backgroundColor: "white",
           zIndex: stickyHeader ? 10 : 1,
           paddingBottom: "8px",
           ...sectionStyle,
