@@ -8,9 +8,8 @@ import { getTrendingPapers } from "@/lib/actions/papers";
 import { Tables } from "@/types/database.types";
 import { VerificationModal } from "./verification-modal";
 import { EmptyState } from "./empty-state";
-import { IconActivity, IconHeart } from "@tabler/icons-react";
+import { IconActivity, IconCalendar, IconHeart } from "@tabler/icons-react";
 
-// If your "vw_final_collection_papers" row type differs, adjust accordingly
 type CollectionPaper = Tables<"vw_final_collection_papers">;
 
 export default async function LikePapersPage() {
@@ -35,7 +34,7 @@ export default async function LikePapersPage() {
           <IconActivity />
           <Title order={3}>Trending</Title>
         </Group>
-        <TPaper radius="md" style={{ flex: 1 }}>
+        <TPaper radius="md" style={{ flex: 1, minHeight: 0 }}>
           <Group
             h="100%"
             p="sm"
@@ -64,7 +63,7 @@ export default async function LikePapersPage() {
       </Stack>
 
       {/* My Papers, grouped by month-year */}
-      <Stack flex={4} style={{ overflowY: "auto" }}>
+      <Stack flex={5} style={{ overflowY: "auto" }}>
         <Group>
           <IconHeart />
           <Title order={3}>Liked</Title>
@@ -82,7 +81,10 @@ export default async function LikePapersPage() {
 
             return (
               <Stack key={monthYear} gap="xs">
-                <Title order={4}>{friendlyDate}</Title>
+                <Group gap="xs" align="center">
+                  <IconCalendar size={18} />
+                  <Title size={"xs"}>{friendlyDate}</Title>
+                </Group>
                 {grouped[monthYear].map((paper) => (
                   <ResearchPaper
                     key={paper.id}

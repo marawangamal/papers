@@ -8,16 +8,18 @@ export function ResearchPaperSummary({ paper }: ResearchPaperExpandedProps) {
     <Card p="md" radius="md" withBorder h="100%">
       <Stack justify="space-between" h="100%">
         <Stack gap="xs">
-          <Title size="md">{paper.title}</Title>
-          <Text size="sm" lineClamp={3} c="dimmed">
+          <Title size="sm" lineClamp={1}>
+            {paper.title}
+          </Title>
+          <Text size="xs" lineClamp={2} c="dimmed">
             {paper.abstract}
           </Text>
         </Stack>
         <Group gap="xs">
-          <Badge variant="light" color="blue">
+          <Badge variant="light" color="blue" size="xs">
             {paper.abbrev}
           </Badge>
-          <Badge variant="outline" color="gray">
+          <Badge variant="outline" color="gray" size="xs">
             {paper.year}
           </Badge>
         </Group>

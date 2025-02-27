@@ -12,12 +12,12 @@ export default function ResearchPaperCollapsed({
     <TPaper p="sm" radius="md">
       <Stack gap="xs">
         <Group justify="space-between">
-          <Title size="md">{paper.title}</Title>
+          <Title size="sm">{paper.title}</Title>
           <Group gap="xs">
-            <Badge variant="light" color="blue">
+            <Badge variant="light" color="blue" size="xs">
               {paper.abbrev}
             </Badge>
-            <Badge variant="outline" color="gray">
+            <Badge variant="outline" color="gray" size="xs">
               {paper.year}
             </Badge>
             <ActionIcon
@@ -31,7 +31,7 @@ export default function ResearchPaperCollapsed({
             </ActionIcon>
           </Group>
         </Group>
-        <Text size="sm" lineClamp={1} c="dimmed">
+        <Text size="xs" lineClamp={1} c="dimmed">
           {paper.abstract}
         </Text>
       </Stack>
