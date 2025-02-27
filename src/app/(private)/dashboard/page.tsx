@@ -6,6 +6,7 @@ import TPaper from "@/components/ui/tpaper";
 import { getCollectionPapers } from "@/lib/actions/collections";
 import { getTrendingPapers } from "@/lib/actions/papers";
 import { Tables } from "@/types/database.types";
+import { VerificationModal } from "./verification-modal";
 
 // If your "vw_final_collection_papers" row type differs, adjust accordingly
 type CollectionPaper = Tables<"vw_final_collection_papers">;
@@ -25,6 +26,7 @@ export default async function LikePapersPage() {
 
   return (
     <Stack h="100%" w="100%" style={{ overflow: "hidden" }}>
+      <VerificationModal />
       {/* Trending Papers */}
       <Stack flex={1}>
         <Title order={3}>Trending Papers</Title>
