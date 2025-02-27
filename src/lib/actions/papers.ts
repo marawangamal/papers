@@ -23,13 +23,15 @@ export async function getPapers({
 }
 
 export async function getTrendingPapers() {
+  const trendingMinYear = new Date().getFullYear() - 1;
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("vw_final_papers")
     .select("*")
     .order("like_count", { ascending: false })
     .order("view_count", { ascending: false })
-    .limit(5);
+    .gte("year", trendingMinYear)
+    .limit(50);
   if (error) {
     throw error;
   }

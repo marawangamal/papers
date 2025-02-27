@@ -8,6 +8,7 @@ import { getTrendingPapers } from "@/lib/actions/papers";
 import { Tables } from "@/types/database.types";
 import { VerificationModal } from "./verification-modal";
 import { EmptyState } from "./empty-state";
+import { IconActivity, IconHeart } from "@tabler/icons-react";
 
 // If your "vw_final_collection_papers" row type differs, adjust accordingly
 type CollectionPaper = Tables<"vw_final_collection_papers">;
@@ -31,7 +32,10 @@ export default async function LikePapersPage() {
         <VerificationModal />
         {/* Trending Papers */}
         <Stack flex={1}>
-          <Title order={3}>Trending Papers</Title>
+          <Group>
+            <IconActivity />
+            <Title order={3}>Trending</Title>
+          </Group>
           <TPaper radius="md" style={{ flex: 1 }}>
             <Group
               h="100%"
@@ -62,7 +66,10 @@ export default async function LikePapersPage() {
 
         {/* My Papers, grouped by month-year */}
         <Stack flex={4} style={{ overflowY: "auto" }}>
-          <Title order={3}>My Papers</Title>
+          <Group>
+            <IconHeart />
+            <Title order={3}>Liked</Title>
+          </Group>
 
           {dateKeys.length === 0 && <EmptyState />}
 
