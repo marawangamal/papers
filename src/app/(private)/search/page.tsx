@@ -20,11 +20,13 @@ export default async function SearchPage({
         fallback={
           <ScrollableContainerPinnedHeader
             outerContainerProps={{
+              size: "xl",
               children: (
                 <PaperFilterAsyncSkeleton searchParams={awaitedSearchParams} />
               ),
             }}
             innerContainerProps={{
+              size: "xl",
               children: <PaperListAsyncSkeleton />,
             }}
           />
@@ -32,9 +34,11 @@ export default async function SearchPage({
       >
         <ScrollableContainerPinnedHeader
           outerContainerProps={{
+            size: "xl",
             children: <PaperFilterAsync searchParams={awaitedSearchParams} />,
           }}
           innerContainerProps={{
+            size: "xl",
             children: <PaperListAsync searchParams={awaitedSearchParams} />,
           }}
         />
