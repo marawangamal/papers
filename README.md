@@ -2,9 +2,11 @@
 
 <div align="center">
 
-[<h1>📎 Papers.app</h1>](https://papers.app/search/7546)
+[<h1>📎 Papers</h1>](https://papers.app/search/7546)
 
 <i>Semantic search machine learning papers </i>
+
+🌐 [**papers.app**](https://papers.app) | [**Follow on 𝕏**](https://x.com/mrremila)
 
 <img src="public/screenshot2.png" style="width: 400px;" />
 
