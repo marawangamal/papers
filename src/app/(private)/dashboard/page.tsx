@@ -1,5 +1,5 @@
 import React from "react";
-import { Stack, Title, Box, Group, Container } from "@mantine/core";
+import { Stack, Title, Box, Group } from "@mantine/core";
 import { format, parse } from "date-fns";
 import { ResearchPaper } from "@/components/paper-list/research-paper";
 import TPaper from "@/components/ui/tpaper";
@@ -27,50 +27,50 @@ export default async function LikePapersPage() {
   const dateKeys = Object.keys(grouped).sort((a, b) => (b > a ? 1 : -1));
 
   return (
-    <Container size="lg" h="100%" w="100%" style={{ overflow: "hidden" }}>
-      <Stack h="100%" w="100%" style={{ overflow: "hidden" }}>
-        <VerificationModal />
-        {/* Trending Papers */}
-        <Stack flex={1}>
-          <Group>
-            <IconActivity />
-            <Title order={3}>Trending</Title>
+    <Stack h="100%" w="100%" style={{ overflow: "hidden" }}>
+      <VerificationModal />
+      {/* Trending Papers */}
+      <Stack flex={1}>
+        <Group>
+          <IconActivity />
+          <Title order={3}>Trending</Title>
+        </Group>
+        <TPaper radius="md" style={{ flex: 1 }}>
+          <Group
+            h="100%"
+            p="sm"
+            align="center"
+            style={{ overflowX: "auto", flexWrap: "nowrap" }}
+          >
+            {trendingPapers.map((paper) => (
+              <Box
+                key={paper.id}
+                h="100%"
+                style={{
+                  minWidth: 300,
+                  maxWidth: 400,
+                  flex: "0 0 auto",
+                }}
+              >
+                <ResearchPaper
+                  paper={paper}
+                  mode="summary"
+                  collectionPapersIds={collectionPapersIds}
+                />
+              </Box>
+            ))}
           </Group>
-          <TPaper radius="md" style={{ flex: 1 }}>
-            <Group
-              h="100%"
-              p="sm"
-              align="center"
-              style={{ overflowX: "auto", flexWrap: "nowrap" }}
-            >
-              {trendingPapers.map((paper) => (
-                <Box
-                  key={paper.id}
-                  h="100%"
-                  style={{
-                    minWidth: 300,
-                    maxWidth: 400,
-                    flex: "0 0 auto",
-                  }}
-                >
-                  <ResearchPaper
-                    paper={paper}
-                    mode="summary"
-                    collectionPapersIds={collectionPapersIds}
-                  />
-                </Box>
-              ))}
-            </Group>
-          </TPaper>
-        </Stack>
+        </TPaper>
+      </Stack>
 
-        {/* My Papers, grouped by month-year */}
-        <Stack flex={4} style={{ overflowY: "auto" }}>
-          <Group>
-            <IconHeart />
-            <Title order={3}>Liked</Title>
-          </Group>
+      {/* My Papers, grouped by month-year */}
+      <Stack flex={4} style={{ overflowY: "auto" }}>
+        <Group>
+          <IconHeart />
+          <Title order={3}>Liked</Title>
+        </Group>
 
+        <Stack flex={1} gap="md" style={{ overflowY: "auto" }}>
           {dateKeys.length === 0 && <EmptyState />}
 
           {dateKeys.map((monthYear) => {
@@ -96,7 +96,7 @@ export default async function LikePapersPage() {
           })}
         </Stack>
       </Stack>
-    </Container>
+    </Stack>
   );
 }
 
