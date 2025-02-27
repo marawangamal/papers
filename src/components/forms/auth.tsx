@@ -16,6 +16,7 @@ import { loginWithEmail, signupWithEmail } from "@/lib/actions/auth";
 import { useForm } from "@mantine/form";
 import Link from "next/link";
 import { ENDPOINTS } from "@/config/const";
+import { useTransition } from "react";
 interface FormValues {
   email: string;
   password: string;
@@ -30,6 +31,7 @@ export type AuthFormProps = {
 };
 
 export default function AuthForm({ message, error }: AuthFormProps) {
+  const [isSubmitting, startTransition] = useTransition();
   const form = useForm({
     initialValues: {
       email: "",
@@ -44,13 +46,11 @@ export default function AuthForm({ message, error }: AuthFormProps) {
   });
 
   const handleSubmit = async (values: FormValues) => {
-    try {
-      const handler =
-        form.values.mode === "login" ? loginWithEmail : signupWithEmail;
-      await handler(values);
-    } finally {
-      form.reset();
-    }
+    const handler =
+      form.values.mode === "login" ? loginWithEmail : signupWithEmail;
+    startTransition(() => {
+      handler(values);
+    });
   };
 
   return (
@@ -125,7 +125,11 @@ export default function AuthForm({ message, error }: AuthFormProps) {
               </Anchor>
             )}
 
-            <Button fullWidth type="submit" loading={form.submitting}>
+            <Button
+              fullWidth
+              type="submit"
+              loading={form.submitting || isSubmitting}
+            >
               {form.values.mode === "login" ? "Login" : "Sign Up"}
             </Button>
           </Stack>
