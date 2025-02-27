@@ -1,4 +1,4 @@
-# [Paperz.io](https://paperz.vercel.app/search/7546)
+# [Papers.app](https://Papers.vercel.app/search/7546)
 
 A semantic search engine for academic papers from major ML conferences.
 
@@ -32,8 +32,8 @@ This will get a local instance of the app running, with sample data.
 1. Clone and install
 
 ```bash
-git clone git@github.com:marawangamal/paperz.git
-cd git@github.com:marawangamal/paperz.git
+git clone git@github.com:marawangamal/Papers.git
+cd git@github.com:marawangamal/Papers.git
 npm install
 npm run build
 ```

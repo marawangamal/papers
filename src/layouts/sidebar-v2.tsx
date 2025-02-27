@@ -1,8 +1,8 @@
 "use client";
 import {
-  IconBrain,
   IconHome2,
   IconLogout,
+  IconPaperclip,
   IconSearch,
 } from "@tabler/icons-react";
 import { Center, Stack, Box, useMantineTheme } from "@mantine/core";
@@ -47,7 +47,7 @@ export function NavbarMinimal() {
       }}
     >
       <Center>
-        <IconBrain size={28} stroke={1.5} />
+        <IconPaperclip size={28} stroke={1.5} />
       </Center>
 
       <Box style={{ flex: 1, marginTop: 50 }}>

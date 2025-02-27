@@ -1,8 +1,8 @@
 // app/(public)/layout.tsx
-// import SignInButton from "@/components/buttons/sign-in";
+import SignInButton from "@/components/buttons/sign-in";
 import { ColorSchemeToggle } from "@/components/color-scheme-toggle";
 import { Box, Container, Group, Stack, Text } from "@mantine/core";
-import { IconBrain } from "@tabler/icons-react";
+import { IconPaperclip } from "@tabler/icons-react";
 
 export default function PublicLayout({
   children,
@@ -21,13 +21,13 @@ export default function PublicLayout({
         >
           <Group justify="space-between" align="center" w="100%">
             <Group>
-              <IconBrain size={28} stroke={1.5} />
+              <IconPaperclip size={28} stroke={1.5} />
               <Text size="xl" fw={700}>
-                Paperz
+                Papers
               </Text>
             </Group>
             <Group>
-              {/* <SignInButton /> */}
+              <SignInButton />
               <ColorSchemeToggle />
             </Group>
           </Group>

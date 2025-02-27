@@ -13,7 +13,7 @@ import {
 import { theme } from "@/config/theme";
 
 export const metadata = {
-  title: "Paperz",
+  title: "Papers",
   description: "Find relevant papers for your research",
 };
 
