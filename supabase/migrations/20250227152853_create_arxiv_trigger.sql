@@ -35,7 +35,7 @@ BEGIN
     NEW.arxiv_url := (result->'arxivInfo'->>'url');
   ELSE
     -- Set default values if the request failed
-    NEW.arxiv_id := 'ARXIV_ID_NA';
+    NEW.arxiv_id := NULL;
     NEW.arxiv_url := NULL;
   END IF;
 

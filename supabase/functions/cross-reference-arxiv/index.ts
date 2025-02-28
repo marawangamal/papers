@@ -31,7 +31,7 @@ async function searchArxiv(title: string): Promise<{ arxivId: string, url: strin
     }
 
     const arxivId = idMatch[1];
-    const pdfUrl = `http://arxiv.org/abs/${arxivId}`;
+    const pdfUrl = `https://arxiv.org/abs/${arxivId}`;
 
     console.log(`Found paper: ${arxivId}`);
     return { arxivId, url: pdfUrl };
