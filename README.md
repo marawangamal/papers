@@ -74,14 +74,21 @@ For ArXiv cross-referencing, set:
 
 ```
 SELECT vault.create_secret(
-  'YOUR_SUPABASE_ANON_KEY',
+  '<YOUR_SUPABASE_ANON_KEY>',
   'supabase_anon_key',
   'supabase anon key'
 );
+
+-- trigger the update
+-- WARNING: this is a heavy oper
+UPDATE papers
+SET created_at = CURRENT_TIMESTAMP
+WHERE id IN (
+    SELECT id
+    FROM papers
+    ORDER BY id
+);
 ```
-
-
-    psql postgresql://postgres:postgres@localhost:54322/postgres
 
 You can do this via supabase GUI or from the cli directly using:
 
