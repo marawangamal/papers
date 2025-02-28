@@ -16,28 +16,37 @@ BEGIN
   FROM vault.decrypted_secrets
   WHERE name = 'supabase_anon_key';
 
-  -- Call the Edge Function with the paper title
-  SELECT content::json INTO result
-  FROM http((
-    'POST',
-    edge_function_url,
-    ARRAY[
-      http_header('Content-Type', 'application/json'),
-      http_header('Authorization', 'Bearer ' || anon_key)
-    ],
-    'application/json',
-    json_build_object('paperTitle', NEW.title)::text
-  )::http_request);
+  BEGIN
+    -- Call the Edge Function with the paper title
+    SELECT content::json INTO result
+    FROM http((
+      'POST',
+      edge_function_url,
+      ARRAY[
+        http_header('Content-Type', 'application/json'),
+        http_header('Authorization', 'Bearer ' || anon_key)
+      ],
+      'application/json',
+      json_build_object('paperTitle', NEW.title)::text
+    )::http_request);
 
-  -- Check if the request was successful and update the paper record
-  IF result->>'success' = 'true' THEN
-    NEW.arxiv_id := (result->'arxivInfo'->>'arxivId');
-    NEW.arxiv_url := (result->'arxivInfo'->>'url');
-  ELSE
-    -- Set default values if the request failed
-    NEW.arxiv_id := NULL;
-    NEW.arxiv_url := NULL;
-  END IF;
+    -- Check if the request was successful and update the paper record
+    IF result->>'success' = 'true' THEN
+      NEW.arxiv_id := (result->'arxivInfo'->>'arxivId');
+      NEW.arxiv_url := (result->'arxivInfo'->>'url');
+    ELSE
+      -- Set default values if the request failed
+      NEW.arxiv_id := NULL;
+      NEW.arxiv_url := NULL;
+    END IF;
+
+  EXCEPTION
+    WHEN others THEN
+      -- Handle any exception, such as a timeout
+      RAISE NOTICE 'An error occurred: %', SQLERRM;
+      NEW.arxiv_id := NULL;
+      NEW.arxiv_url := NULL;
+  END;
 
   RETURN NEW;
 END;
