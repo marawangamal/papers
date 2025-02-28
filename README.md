@@ -70,6 +70,21 @@ NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321
 NEXT_PUBLIC_SUPABASE_ANON_KEY=[your-local-anon-key]
 ```
 
+For ArXiv cross-referencing, set:
+
+```
+SELECT vault.create_secret(
+  'YOUR_SUPABASE_ANON_KEY',
+  'supabase_anon_key',
+  'supabase anon key'
+);
+```
+
+
+    psql postgresql://postgres:postgres@localhost:54322/postgres
+
+You can do this via supabase GUI or from the cli directly using:
+
 5. Initialize database
 
 ```bash

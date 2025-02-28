@@ -14,7 +14,7 @@ BEGIN
   -- Get the key from the vault
   SELECT decrypted_secret INTO anon_key
   FROM vault.decrypted_secrets
-  WHERE name = 'arxiv_anon_key';
+  WHERE name = 'supabase_anon_key';
 
   -- Call the Edge Function with the paper title
   SELECT content::json INTO result
