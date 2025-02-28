@@ -46,9 +46,8 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 -- Create the trigger on the papers table
 -- Adjust the table name and columns as needed for your schema
 CREATE TRIGGER cross_reference_arxiv_trigger
-BEFORE INSERT OR UPDATE OF created_at ON papers  -- Only trigger when created_at changes
+BEFORE INSERT OR UPDATE OF created_at, title ON papers  -- Trigger when created_at or title changes
 FOR EACH ROW
-WHEN (NEW.created_at IS NOT NULL)
 EXECUTE FUNCTION public.call_arxiv_cross_reference();
 
 -- Add comments for documentation

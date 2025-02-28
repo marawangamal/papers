@@ -10,7 +10,7 @@ async function searchArxiv(title: string): Promise<{ arxivId: string, url: strin
   try {
     // Encode the title for URL
     const encodedTitle = encodeURIComponent(`ti:"${title}"`);
-    const url = `http://export.arxiv.org/api/query?search_query=${encodedTitle}&max_results=1&sortBy=relevance`;
+    const url = `https://export.arxiv.org/api/query?search_query=${encodedTitle}&max_results=1&sortBy=relevance&searchtype=title`;
 
     console.log(`Fetching from ArXiv API: ${url}`);
     const response = await fetch(url);
