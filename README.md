@@ -83,13 +83,13 @@ SELECT vault.create_secret(
 And trigger the update
 
 > [!NOTE]
-> This is time consuming and the edge function likely won't trigger for every row. Run repeatedly with a few minutes delay between each run until the count of papers with arxiv_url = null and created_at != '2025-03-01 10:15:00' is zero
+> This operation is time consuming and the edge function likely won't trigger for every row. Run repeatedly with a few minutes delay between each run until the count of papers with arxiv_url = null and created_at != '2025-03-01 10:15:00' is zero
 
 ```
 UPDATE papers
-SET created_at = '2025-03-01 10:15:00'  -- Use a specific timestamp
+SET created_at = '2025-03-01 10:15:00'
 WHERE arxiv_url IS NOT NULL
-AND created_at != '2025-03-01 10:15:00';  -- Note the AND is outside the previous WHERE condition
+AND created_at != '2025-03-01 10:15:00';
 ```
 
 You can do this via supabase GUI or from the cli directly using:
