@@ -70,32 +70,34 @@ NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321
 NEXT_PUBLIC_SUPABASE_ANON_KEY=[your-local-anon-key]
 ```
 
-For ArXiv cross-referencing, set:
+For ArXiv cross-referencing, set the supabase_anon_key secret:
 
 ```
 SELECT vault.create_secret(
-  '<YOUR_SUPABASE_ANON_KEY>',
+  'YOUR_SUPABASE_ANON_KEY',
   'supabase_anon_key',
   'supabase anon key'
 );
 
-And trigger the update
+SELECT vault.create_secret(
+  'YOUR_SUPABASE_URL',
+  'supabase_url',
+  'supabase project url (eg. https://xxxxxxxxx.supabase.co)'
+);
+-- for local development set to http://host.docker.internal:54321
+```
+
+And trigger the update:
 
 > [!NOTE]
-> This operation is time consuming and the edge function likely won't trigger for every row. Run repeatedly with a few minutes delay between each run until the count of papers with arxiv_url = null and created_at != '2025-03-01 10:15:00' is zero
+> You must trigger the `call_arxiv_cross_reference()` function by updating all records in the `papers` table. This operation is time consuming and the edge function likely will fail to trigger for every row. So you must run repeatedly with a few minutes delay between each run until the count of papers with arxiv_url = null and created_at != '2025-03-01 10:15:00' is zero
 
 ```
-
 UPDATE papers
 SET created_at = '2025-03-01 10:15:00'
-WHERE arxiv_url IS NOT NULL
+WHERE arxiv_url IS NULL
 AND created_at != '2025-03-01 10:15:00';
-
 ```
-
-```
-
-You can do this via supabase GUI or from the cli directly using:
 
 5. Initialize database
 
