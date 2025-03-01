@@ -78,6 +78,13 @@ SELECT vault.create_secret(
   'supabase_anon_key',
   'supabase anon key'
 );
+
+SELECT vault.create_secret(
+  '<ef_cross_reference_arxiv>',
+  'supabse_url',
+  'supabase project url (eg. https://xxxxxxxxx.supabase.co)
+);
+-- for local development set to http://host.docker.internal:54321/functions/v1/cross-reference-arxiv
 ```
 
 And trigger the update:
