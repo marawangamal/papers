@@ -90,13 +90,18 @@ SELECT vault.create_secret(
 And trigger the update:
 
 > [!NOTE]
-> You must trigger the `call_arxiv_cross_reference()` function by updating all records in the `papers` table. This operation is time consuming and the edge function likely will fail to trigger for every row. So you must run repeatedly with a few minutes delay between each run until the count of papers with arxiv_url = null and created_at != '2025-03-01 10:15:00' is zero
+> You must trigger the `call_arxiv_cross_reference()` function by updating all records in the `papers` table. This operation is time consuming. May have to run repeatedly in smaller batches.
 
 ```
 UPDATE papers
 SET created_at = '2025-03-01 10:15:00'
-WHERE arxiv_url IS NULL
-AND created_at != '2025-03-01 10:15:00';
+WHERE id IN (
+    SELECT id
+    FROM papers
+    WHERE arxiv_url is NULL
+    AND created_at != '2025-03-01 10:15:00'
+    LIMIT 10
+);
 ```
 
 5. Initialize database
