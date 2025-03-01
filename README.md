@@ -74,13 +74,13 @@ For ArXiv cross-referencing, set the supabase_anon_key secret:
 
 ```
 SELECT vault.create_secret(
-  '<YOUR_SUPABASE_ANON_KEY>',
+  '<YOUR SUPABASE ANON KEY>',
   'supabase_anon_key',
   'supabase anon key'
 );
 
 SELECT vault.create_secret(
-  '<ef_cross_reference_arxiv>',
+  '<YOUR SUPABASE URL>',
   'supabse_url',
   'supabase project url (eg. https://xxxxxxxxx.supabase.co)
 );
