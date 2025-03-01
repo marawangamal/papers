@@ -162,6 +162,8 @@ export type Database = {
         Row: {
           abstract: string | null
           abstract_embedding: string | null
+          arxiv_id: string | null
+          arxiv_url: string | null
           authors: string[] | null
           code_url: string | null
           created_at: string | null
@@ -175,6 +177,8 @@ export type Database = {
         Insert: {
           abstract?: string | null
           abstract_embedding?: string | null
+          arxiv_id?: string | null
+          arxiv_url?: string | null
           authors?: string[] | null
           code_url?: string | null
           created_at?: string | null
@@ -188,6 +192,8 @@ export type Database = {
         Update: {
           abstract?: string | null
           abstract_embedding?: string | null
+          arxiv_id?: string | null
+          arxiv_url?: string | null
           authors?: string[] | null
           code_url?: string | null
           created_at?: string | null
@@ -293,6 +299,8 @@ export type Database = {
           abstract: string | null
           abstract_embedding: string | null
           added_at: string | null
+          arxiv_id: string | null
+          arxiv_url: string | null
           authors: string[] | null
           code_url: string | null
           collection_id: string | null
@@ -319,46 +327,13 @@ export type Database = {
           },
         ]
       }
-      vw_final_event_log_summary: {
-        Row: {
-          last_liked: string | null
-          last_viewed: string | null
-          like_count: number | null
-          net_like_count: number | null
-          paper_id: string | null
-          total_events: number | null
-          unlike_count: number | null
-          view_count: number | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "event_log_paper_id_fkey"
-            columns: ["paper_id"]
-            isOneToOne: false
-            referencedRelation: "papers"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "event_log_paper_id_fkey"
-            columns: ["paper_id"]
-            isOneToOne: false
-            referencedRelation: "vw_final_collection_papers"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "event_log_paper_id_fkey"
-            columns: ["paper_id"]
-            isOneToOne: false
-            referencedRelation: "vw_final_papers"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       vw_final_papers: {
         Row: {
           abbrev: string | null
           abstract: string | null
           abstract_embedding: string | null
+          arxiv_id: string | null
+          arxiv_url: string | null
           authors: string[] | null
           code_url: string | null
           created_at: string | null
@@ -390,35 +365,157 @@ export type Database = {
       }
     }
     Functions: {
-      query_embeddings: {
+      bytea_to_text: {
         Args: {
-          embedding: string
-          match_threshold: number
+          data: string
         }
+        Returns: string
+      }
+      http: {
+        Args: {
+          request: Database["public"]["CompositeTypes"]["http_request"]
+        }
+        Returns: unknown
+      }
+      http_delete:
+        | {
+            Args: {
+              uri: string
+            }
+            Returns: unknown
+          }
+        | {
+            Args: {
+              uri: string
+              content: string
+              content_type: string
+            }
+            Returns: unknown
+          }
+      http_get:
+        | {
+            Args: {
+              uri: string
+            }
+            Returns: unknown
+          }
+        | {
+            Args: {
+              uri: string
+              data: Json
+            }
+            Returns: unknown
+          }
+      http_head: {
+        Args: {
+          uri: string
+        }
+        Returns: unknown
+      }
+      http_header: {
+        Args: {
+          field: string
+          value: string
+        }
+        Returns: Database["public"]["CompositeTypes"]["http_header"]
+      }
+      http_list_curlopt: {
+        Args: Record<PropertyKey, never>
         Returns: {
-          abbrev: string | null
-          abstract: string | null
-          abstract_embedding: string | null
-          authors: string[] | null
-          code_url: string | null
-          created_at: string | null
-          id: string | null
-          like_count: number | null
-          normalized_title: string | null
-          pdf_url: string | null
-          status: string | null
-          title: string | null
-          venue_id: string | null
-          view_count: number | null
-          year: number | null
+          curlopt: string
+          value: string
         }[]
       }
+      http_patch: {
+        Args: {
+          uri: string
+          content: string
+          content_type: string
+        }
+        Returns: unknown
+      }
+      http_post:
+        | {
+            Args: {
+              uri: string
+              content: string
+              content_type: string
+            }
+            Returns: unknown
+          }
+        | {
+            Args: {
+              uri: string
+              data: Json
+            }
+            Returns: unknown
+          }
+      http_put: {
+        Args: {
+          uri: string
+          content: string
+          content_type: string
+        }
+        Returns: unknown
+      }
+      http_reset_curlopt: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
+      http_set_curlopt: {
+        Args: {
+          curlopt: string
+          value: string
+        }
+        Returns: boolean
+      }
+      text_to_bytea: {
+        Args: {
+          data: string
+        }
+        Returns: string
+      }
+      urlencode:
+        | {
+            Args: {
+              data: Json
+            }
+            Returns: string
+          }
+        | {
+            Args: {
+              string: string
+            }
+            Returns: string
+          }
+        | {
+            Args: {
+              string: string
+            }
+            Returns: string
+          }
     }
     Enums: {
       t_event: "view" | "like" | "unlike" | "share"
     }
     CompositeTypes: {
-      [_ in never]: never
+      http_header: {
+        field: string | null
+        value: string | null
+      }
+      http_request: {
+        method: unknown | null
+        uri: string | null
+        headers: Database["public"]["CompositeTypes"]["http_header"][] | null
+        content_type: string | null
+        content: string | null
+      }
+      http_response: {
+        status: number | null
+        content_type: string | null
+        headers: Database["public"]["CompositeTypes"]["http_header"][] | null
+        content: string | null
+      }
     }
   }
 }
