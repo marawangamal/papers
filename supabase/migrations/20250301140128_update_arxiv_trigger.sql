@@ -10,18 +10,20 @@ CREATE OR REPLACE FUNCTION public.call_arxiv_cross_reference()
 RETURNS TRIGGER AS $$
 DECLARE
   result json;
-  supabse_url;
+  supabase_url text;
   supabase_anon_key text;
+  edge_function_url text;
 BEGIN
   -- Get the key from the vault
   SELECT decrypted_secret INTO supabase_anon_key
   FROM vault.decrypted_secrets
   WHERE name = 'supabase_anon_key';
 
-  SELECT decrypted_secret INTO supabse_url
+  SELECT decrypted_secret INTO supabase_url
   FROM vault.decrypted_secrets
-  WHERE name = 'supabse_url';
+  WHERE name = 'supabase_url';
   edge_function_url := supabase_url || '/functions/v1/cross-reference-arxiv';
+  
 
   BEGIN
     -- Call the Edge Function with the paper title
@@ -63,7 +65,7 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 -- Adjust the table name and columns as needed for your schema
 
 CREATE TRIGGER cross_reference_arxiv_trigger
-AFTER INSERT OR UPDATE OF title ON papers
+AFTER INSERT OR UPDATE OF created_at, title ON papers
 FOR EACH ROW
 EXECUTE FUNCTION public.call_arxiv_cross_reference();
 

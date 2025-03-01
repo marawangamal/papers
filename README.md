@@ -81,10 +81,10 @@ SELECT vault.create_secret(
 
 SELECT vault.create_secret(
   '<YOUR SUPABASE URL>',
-  'supabse_url',
-  'supabase project url (eg. https://xxxxxxxxx.supabase.co)
+  'supabase_url',
+  'supabase project url (eg. https://xxxxxxxxx.supabase.co)'
 );
--- for local development set to http://host.docker.internal:54321/functions/v1/cross-reference-arxiv
+-- for local development set to http://host.docker.internal:54321
 ```
 
 And trigger the update:
@@ -95,7 +95,7 @@ And trigger the update:
 ```
 UPDATE papers
 SET created_at = '2025-03-01 10:15:00'
-WHERE arxiv_url IS NOT NULL
+WHERE arxiv_url IS NULL
 AND created_at != '2025-03-01 10:15:00';
 ```
 
