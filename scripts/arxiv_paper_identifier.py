@@ -4,6 +4,7 @@ import bs4
 import time
 import requests
 from dataclasses import dataclass
+import argparse
 
 
 @dataclass
@@ -58,7 +59,22 @@ def get_arxiv_paper(title, max_results=1) -> SearchResult:
 
 
 def main():
-    df = pd.read_csv("papers_rows.csv")
+    # Set up argument parser
+    parser = argparse.ArgumentParser(
+        description="Identify arXiv papers from titles in a CSV file"
+    )
+    parser.add_argument("input_file", help="Input CSV file containing paper titles")
+    parser.add_argument(
+        "--output",
+        "-o",
+        help="Output CSV file (defaults to new .csv in current directory)",
+    )
+    args = parser.parse_args()
+
+    # Determine output file
+    output_file = args.output if args.output else "papers_rows_with_arxiv_id.csv"
+
+    df = pd.read_csv(args.input_file)
 
     for idx, row in tqdm(df.iterrows(), total=len(df)):
 
@@ -70,12 +86,12 @@ def main():
         start_time = time.time()
         arxiv_paper = get_arxiv_paper(title)
 
-        if arxiv_paper and not arxiv_paper.error:
+        if arxiv_paper and not arxiv_paper.error and not arxiv_paper.not_found:
             df.loc[idx, "arxiv_id"] = arxiv_paper.paper.arxiv_id
             df.loc[idx, "arxiv_url"] = arxiv_paper.paper.arxiv_url
 
         # Save the DataFrame after each update
-        df.to_csv("papers_rows_with_arxiv_id.csv", index=False)
+        df.to_csv(output_file, index=False)
 
         end_time = time.time()
 
