@@ -70,40 +70,6 @@ NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321
 NEXT_PUBLIC_SUPABASE_ANON_KEY=[your-local-anon-key]
 ```
 
-For ArXiv cross-referencing, set the supabase_anon_key secret:
-
-```
-SELECT vault.create_secret(
-  'YOUR_SUPABASE_ANON_KEY',
-  'supabase_anon_key',
-  'supabase anon key'
-);
-
-SELECT vault.create_secret(
-  'YOUR_SUPABASE_URL',
-  'supabase_url',
-  'supabase project url (eg. https://xxxxxxxxx.supabase.co)'
-);
--- for local development set to http://host.docker.internal:54321
-```
-
-And trigger the update:
-
-> [!NOTE]
-> You must trigger the `call_arxiv_cross_reference()` function by updating all records in the `papers` table. This operation is time consuming. May have to run repeatedly in smaller batches.
-
-```
-UPDATE papers
-SET created_at = '2025-03-01 10:15:00'
-WHERE id IN (
-    SELECT id
-    FROM papers
-    WHERE arxiv_url is NULL
-    AND created_at != '2025-03-01 10:15:00'
-    LIMIT 10
-);
-```
-
 5. Initialize database
 
 ```bash
