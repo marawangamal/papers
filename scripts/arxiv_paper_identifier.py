@@ -6,6 +6,8 @@ import requests
 from dataclasses import dataclass
 import argparse
 
+DELAY_SECONDS = 3
+
 
 @dataclass
 class ArxivPaper:
@@ -76,6 +78,9 @@ def main():
 
     df = pd.read_csv(args.input_file)
 
+    for col in ["title", "arxiv_url", "arxiv_id"]:
+        assert col in df.columns, f"Column {col} not found in {args.input_file}"
+
     for idx, row in tqdm(df.iterrows(), total=len(df)):
 
         if not pd.isna(row["arxiv_id"]) or not pd.isna(row["arxiv_url"]):
@@ -95,9 +100,9 @@ def main():
 
         end_time = time.time()
 
-        # Wait for 3 seconds between requests
-        if end_time - start_time < 3:
-            time.sleep(3 - (end_time - start_time))
+        # Wait for DELAY_SECONDS between requests
+        if end_time - start_time < DELAY_SECONDS:
+            time.sleep(DELAY_SECONDS - (end_time - start_time))
 
 
 if __name__ == "__main__":
