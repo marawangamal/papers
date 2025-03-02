@@ -2,9 +2,7 @@ import pandas as pd
 from tqdm import tqdm
 import bs4
 import time
-
 import requests
-
 from dataclasses import dataclass
 
 
@@ -59,32 +57,32 @@ def get_arxiv_paper(title, max_results=1) -> SearchResult:
     return SearchResult(paper=paper, error=False, not_found=False)
 
 
-if __name__ == "__main__":
-    # Read the CSV file
+def main():
     df = pd.read_csv("papers_rows.csv")
-
-    # Add 2 new columns to the dataframe, arxiv_id and arxiv_url
-    df["arxiv_id"] = None
-    df["arxiv_url"] = None
 
     for idx, row in tqdm(df.iterrows(), total=len(df)):
 
-        print
+        if not pd.isna(row["arxiv_id"]) or not pd.isna(row["arxiv_url"]):
+            print(f"Skipping {row['title']} because it already has an arxiv id or url")
+            continue
+
         title = row["title"]
         start_time = time.time()
         arxiv_paper = get_arxiv_paper(title)
 
-        if arxiv_paper:
-            df.loc[idx, "arxiv_id"] = arxiv_paper.arxiv_id
-            df.loc[idx, "arxiv_url"] = arxiv_paper.arxiv_url
+        if arxiv_paper and not arxiv_paper.error:
+            df.loc[idx, "arxiv_id"] = arxiv_paper.paper.arxiv_id
+            df.loc[idx, "arxiv_url"] = arxiv_paper.paper.arxiv_url
 
+        # Save the DataFrame after each update
         df.to_csv("papers_rows_with_arxiv_id.csv", index=False)
 
         end_time = time.time()
 
+        # Wait for 3 seconds between requests
         if end_time - start_time < 3:
-            # pause for a total of 3 seconds
             time.sleep(3 - (end_time - start_time))
 
-        if idx > 10:
-            break
+
+if __name__ == "__main__":
+    main()
