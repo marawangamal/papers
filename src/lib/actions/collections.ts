@@ -25,7 +25,7 @@ export async function getCollectionPapers() {
         },
         [`collections`],
         {
-            revalidate: false,
+            revalidate: 300, // 5 minutes in seconds
             tags: [`collections`],
         },
     )();

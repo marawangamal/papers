@@ -29,6 +29,10 @@ export async function GET(request: Request) {
       success: true,
       count: results.length,
       results,
+    }, {
+      headers: {
+        "Cache-Control": "public, s-maxage=300, stale-while-revalidate=60",
+      },
     });
   } catch (error) {
     console.error("Search error details:", error);
