@@ -121,10 +121,12 @@ if __name__ == '__main__':
 
 ```
 
+Once the script is working on your machine, create a PR titled `Feat/add-conference-<year>-<abbreviation>` (e.g., `Feat/add-conference-2025-icml`). Once merged, one of the maintainers will run your script, then they will run `scripts/supabase_import.py --path path/to/dump` to import the data into the db server.
+
 ### Submitting a PR
 
 1. Request access as a contributor
-2. Create a new branch (`git checkout -b Feat/my-feature`)
+2. Create a new branch (`git checkout -b Feat/my-feature`) or (`git checkout -b Bugfix/remove-issue`)
 3. Make your changes
 4. Run linting: `npm run lint`
 5. Commit your changes (`git commit -m 'Add some feature'`)
