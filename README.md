@@ -17,16 +17,17 @@
 - [x] NeurIPS
 - [x] ICML
 - [x] PMLR (AISTATS, COLT, CoRL,ICGI)
-- [ ] ICLR
+- [x] ICLR
 
 ## Features
 
 - [x] Search papers using natural language queries
 - [x] Save papers to collection
+- [ ] Add list of citing papers to each paper (fostering reverse search)
 - [ ] Display similar papers (ability to click on a paper and see other papers similar to it)
-- [ ] Sort by year
-- [ ] Add citations count
-- [ ] Add list of citing papers
+- [ ] Add citations count to papers
+- [ ] Add upvotes count from huggingface if we can link the dbs
+- [ ] Add heart button on homepage to papers (redirects to user login)
 
 ## Local Development
 
