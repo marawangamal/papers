@@ -17,14 +17,13 @@
 - [x] NeurIPS
 - [x] ICML
 - [x] PMLR (AISTATS, COLT, CoRL,ICGI)
-- [ ] ICLR
+- [x] ICLR
 
 ## Features
 
 - [x] Search papers using natural language queries
 - [x] Save papers to collection
 - [ ] Display similar papers (ability to click on a paper and see other papers similar to it)
-- [ ] Sort by year
 - [ ] Add citations count
 - [ ] Add list of citing papers
 

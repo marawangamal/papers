@@ -109,7 +109,6 @@ class ICLRScraper(ConferenceScraper):
             return []
 
     def get_paper_data(self, paper_data: Dict) -> Dict[str, Optional[str]]:
-        """Extract paper data"""
         processed_data = {
             "title": None,
             "authors": [],
@@ -124,28 +123,34 @@ class ICLRScraper(ConferenceScraper):
         if content is None:
             raise ValueError("content is None")
 
-        if title := content.get("title"):
-            processed_data["title"] = (
-                title if isinstance(title, str) else title.get("value")
-            )
-        else:
+        # title
+        title = content.get("title")
+        if isinstance(title, dict):
+            title = title.get("value")
+        if not title:
             raise ValueError("title is None")
+        processed_data["title"] = _clean_text(title)
 
-        if authors := content.get("authors"):
-            processed_data["authors"] = (
-                authors if isinstance(authors, list) else authors.get("value")
-            )
-        else:
+        # authors
+        authors = content.get("authors")
+        if isinstance(authors, dict):
+            authors = authors.get("value")
+        if not authors:
             raise ValueError("authors is None")
+        processed_data["authors"] = _clean_list(authors)
 
-        if id := paper_data.get("id"):
-            processed_data["pdf_url"] = f"https://openreview.net?pdf?id={id}"
+        # pdf_url
+        note_id = paper_data.get("id")
+        if note_id:
+            processed_data["pdf_url"] = _clean_text(f"https://openreview.net?pdf=id={note_id}")
 
-        if abstract := content.get("abstract"):
-            if isinstance(abstract, dict):
-                abstract = abstract.get("value")
-            processed_data["abstract"] = abstract
-            processed_data["code_url"] = self.extract_github_url(abstract)
+        # abstract (+ extract code url from abstract)
+        abstract = content.get("abstract")
+        if isinstance(abstract, dict):
+            abstract = abstract.get("value")
+        abstract = _clean_text(abstract)
+        processed_data["abstract"] = abstract
+        processed_data["code_url"] = _clean_text(self.extract_github_url(abstract) if abstract else None)
 
         return processed_data
 
