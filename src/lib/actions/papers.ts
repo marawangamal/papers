@@ -113,7 +113,7 @@ export async function getMatchingPapers(
       key,
     ],
     {
-      revalidate: false,
+      revalidate: 300, // 5 minutes in seconds
       tags: [`papers`],
     },
   )();

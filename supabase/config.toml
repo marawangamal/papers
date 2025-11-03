@@ -264,6 +264,11 @@ verify_jwt = true
 import_map = "./functions/search/deno.json"
 entrypoint = "./functions/search/index.ts"
 
+[functions.cross-reference-arxiv]
+enabled = true
+verify_jwt = true
+entrypoint = "./functions/cross-reference-arxiv/index.ts"
+
 [analytics]
 enabled = true
 port = 54327

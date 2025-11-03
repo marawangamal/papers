@@ -13,6 +13,7 @@ import {
   Tooltip,
 } from "@mantine/core";
 import {
+  IconArchive,
   IconBrandGithub,
   IconCheck,
   IconEye,
@@ -113,6 +114,26 @@ export function ResearchPaperExpanded({
                 }}
               >
                 PDF
+              </Button>
+            )}
+            {paper.arxiv_url && (
+              <Button
+                component="a"
+                href={paper.arxiv_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                leftSection={<IconArchive size={16} />}
+                variant="light"
+                color="orange"
+                size="sm"
+                onClick={() => {
+                  createEvent({
+                    event: "view",
+                    paper_id: paper.id,
+                  });
+                }}
+              >
+                arXiv
               </Button>
             )}
             {paper.code_url && (

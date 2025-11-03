@@ -8,6 +8,10 @@ export async function GET() {
       success: true,
       count: venues.length,
       venues,
+    }, {
+      headers: {
+        "Cache-Control": "public, s-maxage=300, stale-while-revalidate=60",
+      },
     });
   } catch (error) {
     console.error("Error fetching venues:", error);

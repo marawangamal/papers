@@ -43,5 +43,5 @@ next-env.d.ts
 *.csv
 *.venv
 neurips_data
-
 __pycache__
+*.pyc
