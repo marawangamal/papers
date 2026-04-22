@@ -1,7 +1,10 @@
 import re
-import time
 from typing import Dict, Optional
-from bs4 import BeautifulSoup
+
+import bibtexparser
+import requests
+from bibtexparser.bparser import BibTexParser
+from bibtexparser.customization import convert_to_unicode
 from tqdm import tqdm
 
 from base import ConferenceScraper  # Use absolute import
@@ -13,112 +16,97 @@ venue2abbrevMap = {
     "Conference on Robot Learning": "CoRL",
     "Probabilistic Graphical Models": "PGM",
     "Conference on Learning Theory": "COLT",
-    # "Neural Information Processing Systems": "NuerIPS",
-    # "Advances in Neural Information Processing Systems": "NeurIPS",
-    # "International Conference on Learning Representations": "ICLR",
-    # "Uncertainty in Artificial Intelligence": "UAI",
-    # "Algorithmic Learning Theory": "ALT",
-    # "International Workshop on Artificial Intelligence and Statistics": "AISTATS",  # older name
-    # "Gaussian Processes in Practice": "GPIP",  # Note: This is my best guess
-    # "Journal of Machine Learning Research": "JMLR",
-    # "Empirical Methods in Natural Language Processing": "EMNLP",
-    # "International Conference on Computational Learning Theory": "COLT",
-    # "Conference on Knowledge Discovery and Data Mining": "KDD",
-    # "International Joint Conference on Artificial Intelligence": "IJCAI",
-    # "AAAI Conference on Artificial Intelligence": "AAAI",
 }
+
+abbrev2venueMap = {v: k for k, v in venue2abbrevMap.items()}
 
 
 class Scraper(ConferenceScraper):
-    
-    @property
-    def base_url(self) -> str:
-        return "https://proceedings.mlr.press"
+    def __init__(self, conf: str, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # NOTE: this scraper only works for the conferences in venue2abbrevMap. To add support
+        # for other conferences, add them to the map.
+        canonical = {k.lower(): k for k in abbrev2venueMap}
+        assert conf.lower() in canonical, f"This scraper only works for {list(abbrev2venueMap)}"
+        self.conf = canonical[conf.lower()]
 
-    def get_venue(self, year: int) -> Optional[Dict]:
-        """Get venue information"""
-        url = f"{self.base_url}/v{year}"
-        response = self.session.get(url)
-        soup = BeautifulSoup(response.text, 'html.parser')
-        venue = soup.find('h2')
-        print(f"Venue: {venue}")
-        try:
-            # Pattern handles:
-            # "Volume 89: The 22nd International Conference..." 
-            pattern = r"Volume \d+: (?:The \d+(?:st|nd|rd|th) )?(.*?)(?:,\s*\d+)"
-            # Simple pattern just for year
-            year_pattern = r",.*?(\d{4})"
-            match = re.search(pattern, venue.text)
-            year_match = re.search(year_pattern, venue.text)
+    def _get_base_url(self, volume: int) -> str:
+        return f"https://proceedings.mlr.press/v{volume}/assets/bib/bibliography.bib"
 
-            if match and year_match:
-                title = match.group(1)
-                return {
-                    "title": title,
-                    "abbrev": venue2abbrevMap[title],
-                    "year": int(year_match.group(1))
-                }
-        except:
+    def _get_venue(self, entries: list) -> Optional[Dict]:
+        """Resolve (title, abbrev, year) from the BibTeX entries of a volume."""
+        proc = next((e for e in entries if e.get("ENTRYTYPE") == "proceedings"), None)
+        papers = [e for e in entries if e.get("ENTRYTYPE") == "inproceedings"]
+        if not proc or not papers:
             return None
+        title = next((t for t in venue2abbrevMap if t in proc.get("booktitle", "")), None)
+        if not title or venue2abbrevMap[title] != self.conf:
+            return None
+        return {"title": title, "abbrev": self.conf, "year": int(papers[0]["year"])}
 
-    def get_paper(self, url: str, venue: Dict) -> Dict:
-        # Extract:
-        # title,authors,abstract,venue_abbrev,venue_year,pdf_url,code_url
-        response = self.session.get(url)
-        soup = BeautifulSoup(response.text, 'html.parser')
-        abstract = next(iter(soup.find('div', id='abstract').children))
-        # Find <a> containing text PDF orDownload PDF or anything similar
-        pdf_link = soup.find('a', text=re.compile('Download PDF', re.IGNORECASE))
-        code_link = soup.find('a', text=re.compile('Code', re.IGNORECASE))
-        title = soup.find('title').text
-        # Extract and clean authors
-        authors_text = soup.find('span', class_='authors').text
-        # Remove special characters and multiple spaces
-        authors_text = re.sub(r'\s+', ' ', authors_text)
-        authors = [author.strip() for author in authors_text.split(',')]    
-        if "High Dimensional Regression with Binary Coefficients" in title:
-            print(authors)   
-        return {
-            "title": title,
-            "authors":authors,
-            "abstract": abstract,
-            "venue_abbrev": venue['abbrev'],
-            "venue_year": venue['year'],
-            "pdf_url": pdf_link.get('href') if pdf_link else None,
-            "code_url": code_link.get('href') if code_link else None
-        }
-    
+    @staticmethod
+    def _to_code_url(url: Optional[str], abstract: Optional[str]) -> Optional[str]:
+        """A code URL advertised in the abstract is a strong signal, so check there
+        first; fall back to the feed's `url` field (project link)."""
+        if abstract:
+            code_hosts = ("github.com", "gitlab.com", "huggingface.co", "bitbucket.org")
+            for u in re.findall(r"https?://[^\s)>\]}]+", abstract):
+                if any(h in u for h in code_hosts):
+                    return u.rstrip(".,;:")
+        return url
+
+    # NOTE: this is the only method that needs to be defined according to the base class.
+    # For PMLR, `year` is a PMLR volume number, not a calendar year.
     def scrape_year(self, year: int):
-        """Scrape all papers for a given year"""
-        print(f"Scraping {year}...")
-        
-        # Get the year's proceedings page
-        url = f"{self.base_url}/v{year}"
-        response = self.session.get(url)
-        soup = BeautifulSoup(response.text, 'html.parser')
-        papers = soup.find_all('div', class_='paper')
-        venue = self.get_venue(year)
-        if not venue:
-            print(f"Error fetching venue information for year {year}")
-            return
-        self.save_venue(venue)
-    
+        """Scrape all papers for a given PMLR volume."""
+        print(f"Scraping v{year}...")
+        url = self._get_base_url(year)
+        parser = BibTexParser(common_strings=True)
+        parser.customization = convert_to_unicode
+        db = bibtexparser.loads(requests.get(url).text, parser=parser)
 
-        with tqdm(total=len(papers), desc=f"Year {year}", unit="paper") as pbar:
+        venue = self._get_venue(db.entries)
+        if not venue:
+            print(f"Skipping v{year}: not {self.conf}")
+            return
+
+        papers = [e for e in db.entries if e.get("ENTRYTYPE") == "inproceedings"]
+        self.save_venue(venue)
+        with tqdm(total=len(papers), desc=f"Volume {year}", unit="paper") as pbar:
             for paper in papers:
                 try:
-                    paper_link = paper.find('a')
-                    paper_data = self.get_paper(paper_link.get('href'), venue)
+                    paper_data = {
+                        "title": paper.get("title", ""),
+                        "authors": [" ".join(reversed(a.split(", "))) for a in paper.get("author", "").split(" and ")],
+                        "abstract": paper.get("abstract"),
+                        "pdf_url": paper.get("pdf"),
+                        "code_url": self._to_code_url(None, paper.get("abstract")),
+                        # venue
+                        "venue_abbrev": venue["abbrev"],
+                        "venue_year": venue["year"],
+                    }
                     self.save_paper(paper_data)
                     pbar.update(1)
-                    time.sleep(self.delay)
-                    
+
                 except Exception as e:
                     print(f"\nError processing paper: {str(e)}")
                     continue
 
+
 # Usage example
 if __name__ == "__main__":
-    # Scrape ICML papers
-    scraper = Scraper(output_dir='dumps/pmlr2')
-    scraper.scrape_multiple_years(list(range(0,  263, 1)))
+    import argparse
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--conf", required=True)
+    parser.add_argument(
+        "--years",
+        required=True,
+        nargs="+",
+        type=int,
+        help="PMLR volume numbers (NOT calendar years). e.g. 238 = AISTATS 2024.",
+    )
+    args = parser.parse_args()
+
+    scraper = Scraper(conf=args.conf, output_dir=f"dumps/{args.conf.lower()}")
+    scraper.scrape_multiple_years(args.years)
