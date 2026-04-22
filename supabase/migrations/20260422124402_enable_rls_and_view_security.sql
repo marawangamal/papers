@@ -66,3 +66,14 @@ alter table public.search_logs       enable row level security;
 create policy "search_logs: anyone insert"
     on public.search_logs for insert
     with check (true);
+
+-- ─── views: run as caller so RLS on underlying tables is enforced ───────────
+-- Without security_invoker, views execute as their owner and bypass RLS on
+-- the base tables. Turning it on makes vw_final_papers / vw_final_venues
+-- inherit public-read, vw_final_collection_papers scope to the caller's
+-- collections, and vw_derived_event_log_summary scope to the caller's own
+-- event_log rows.
+alter view public.vw_final_papers              set (security_invoker = on);
+alter view public.vw_final_venues              set (security_invoker = on);
+alter view public.vw_final_collection_papers   set (security_invoker = on);
+alter view public.vw_derived_event_log_summary set (security_invoker = on);
