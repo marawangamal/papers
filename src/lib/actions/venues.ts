@@ -13,3 +13,14 @@ export async function getVenues() {
     }
     return data;
 }
+
+export async function getVenueCoverage() {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+        .from("vw_venue_coverage")
+        .select("*");
+    if (error) {
+        throw error;
+    }
+    return data;
+}

@@ -363,6 +363,14 @@ export type Database = {
         };
         Relationships: [];
       };
+      vw_venue_coverage: {
+        Row: {
+          abbrev: string | null;
+          year: number | null;
+          paper_count: number | null;
+        };
+        Relationships: [];
+      };
     };
     Functions: {
       bytea_to_text: {
