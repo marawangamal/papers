@@ -2,7 +2,7 @@
 import SignInButton from "@/components/buttons/sign-in";
 import { ColorSchemeToggle } from "@/components/color-scheme-toggle";
 import { Box, Container, Group, Stack, Text, ActionIcon } from "@mantine/core";
-import { IconPaperclip, IconBrandGithub } from "@tabler/icons-react";
+import { IconPaperclip, IconBrandGithub, IconTable } from "@tabler/icons-react";
 import Link from "next/link";
 
 export default function PublicLayout({
@@ -30,14 +30,15 @@ export default function PublicLayout({
               </Group>
             </Link>
             <Group>
-              <Link
+              <ActionIcon
+                variant="subtle"
+                size="lg"
+                component={Link}
                 href="/coverage"
-                style={{ textDecoration: "none" }}
+                aria-label="Coverage"
               >
-                <Text c="dimmed" size="sm">
-                  Coverage
-                </Text>
-              </Link>
+                <IconTable size={18} />
+              </ActionIcon>
               <ActionIcon
                 variant="subtle"
                 size="lg"
