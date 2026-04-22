@@ -101,24 +101,15 @@ from base import ConferenceScraper
 
 class MyScraper(ConferenceScraper):
     # You just need to implement `get_venue` and `get_papers`
-
-    def get_venue(self, year):
-        # Implement this...
-         # Must return a dict with keys: [name, abbrev, year]
-
-    def get_papers(self, venue):
-        # Implement this...
-        # Must return a dict with keys: [title, authors, abstract, venue_abbrev, venue_year, pdf_url, code_url]
-
     def scrape_year(self, year: int):
         venue = get_venue(year) # Dict with keys:
-        self.save_venue(venue)
+        self.save_venue(venue)  # Saves the venue to `dumps/icml/venues.csv`
         for paper in get_papers(venue):
-            self.save_paper(paper)
+            self.save_paper(paper) # Saves the paper to `dumps/icml/papers.csv`
 
 if __name__ == '__main__':
-    scraper = MyScraper(output_dir='dumps')
-    scraper.scrape_multiple_years([2020, 2021])
+    scraper = MyScraper(output_dir='dumps/icml')
+    scraper.scrape_year(2021)
 
 ```
 

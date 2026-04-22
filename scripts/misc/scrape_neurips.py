@@ -99,5 +99,5 @@ class NeuripsScraper(ConferenceScraper):
 # Usage example
 if __name__ == "__main__":
     # Scrape ICML papers
-    icml_scraper = NeuripsScraper(output_dir='dumps/icml')
-    icml_scraper.scrape_multiple_years(list(range(2024, 2020, -1)))
+    icml_scraper = NeuripsScraper(output_dir='dumps/neurips2025')
+    icml_scraper.scrape_multiple_years(list(range(2025, 2020, -1)))
