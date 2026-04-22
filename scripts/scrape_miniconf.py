@@ -34,7 +34,7 @@ abbrev2venueMap = {v: k for k, v in venue2abbrevMap.items()}
 
 
 @dataclass
-class ICMLPaper:
+class MiniconfPaper:
     # ─── basic metadata ──────────────────────────────────────────────────────────
     id: int
     uid: str
@@ -91,7 +91,7 @@ class ICMLPaper:
 
     # ─── helper constructor ─────────────────────────────────────────────────────
     @classmethod
-    def from_dict(cls, d: Dict[str, Any]) -> "ICMLPaper":
+    def from_dict(cls, d: Dict[str, Any]) -> "MiniconfPaper":
         """Create a PaperEvent, ignoring any keys we didn't model."""
         allowed = {f.name for f in fields(cls)}
         filtered = {k: v for k, v in d.items() if k in allowed}
@@ -146,7 +146,7 @@ class Scraper(ConferenceScraper):
         self.save_venue(venue)
         with tqdm(total=len(papers), desc=f"Year {year}", unit="paper") as pbar:
             for paper in papers:
-                paper_ = ICMLPaper.from_dict(paper)
+                paper_ = MiniconfPaper.from_dict(paper)
                 try:
 
                     paper_data = {
