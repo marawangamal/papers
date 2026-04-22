@@ -7,6 +7,7 @@ import {
 } from "@tabler/icons-react";
 import { Center, Stack, Box, useMantineTheme } from "@mantine/core";
 import { usePathname } from "next/navigation";
+import Link from "next/link";
 import { logout } from "@/lib/actions/auth";
 import { useTransition } from "react";
 import { NavbarLink } from "./nav-link";
@@ -47,7 +48,9 @@ export function NavbarMinimal() {
       }}
     >
       <Center>
-        <IconPaperclip size={28} stroke={1.5} />
+        <Link href="/dashboard" style={{ color: "inherit", display: "inline-flex" }} aria-label="Home">
+          <IconPaperclip size={28} stroke={1.5} />
+        </Link>
       </Center>
 
       <Box style={{ flex: 1, marginTop: 50 }}>

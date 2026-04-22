@@ -3,6 +3,7 @@ import SignInButton from "@/components/buttons/sign-in";
 import { ColorSchemeToggle } from "@/components/color-scheme-toggle";
 import { Box, Container, Group, Stack, Text, ActionIcon } from "@mantine/core";
 import { IconPaperclip, IconBrandGithub } from "@tabler/icons-react";
+import Link from "next/link";
 
 export default function PublicLayout({
   children,
@@ -20,12 +21,14 @@ export default function PublicLayout({
           }}
         >
           <Group justify="space-between" align="center" w="100%">
-            <Group>
-              <IconPaperclip size={28} stroke={1.5} />
-              <Text size="xl" fw={700}>
-                Papers
-              </Text>
-            </Group>
+            <Link href="/" style={{ textDecoration: "none", color: "inherit" }}>
+              <Group>
+                <IconPaperclip size={28} stroke={1.5} />
+                <Text size="xl" fw={700}>
+                  Papers
+                </Text>
+              </Group>
+            </Link>
             <Group>
               <ActionIcon
                 variant="subtle"
