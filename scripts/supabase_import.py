@@ -14,11 +14,15 @@ class SupabaseImporter:
         # Load environment variables
         load_dotenv()
 
-        # Initialize Supabase client
+        # Initialize Supabase client with the service role key so the importer can
+        # bypass RLS. This key must NEVER be shipped to the browser — keep it server-
+        # side only (no NEXT_PUBLIC_ prefix).
         url: str = os.getenv("NEXT_PUBLIC_SUPABASE_URL")
-        key: str = os.getenv("NEXT_PUBLIC_SUPABASE_ANON_KEY")
+        key: str = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
         if not url or not key:
-            raise ValueError("Missing SUPABASE_URL or SUPABASE_KEY in .env file")
+            raise ValueError(
+                "Missing NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY in .env file"
+            )
 
         self.supabase: Client = create_client(url, key)
         self.venues_path = Path(venues_path)

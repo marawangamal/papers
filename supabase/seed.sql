@@ -108,11 +108,6 @@ SET row_security = off;
 
 
 
---
--- Data for Name: key; Type: TABLE DATA; Schema: pgsodium; Owner: supabase_admin
---
-
-
 
 --
 -- Data for Name: venues; Type: TABLE DATA; Schema: public; Owner: postgres
@@ -2053,13 +2048,6 @@ INSERT INTO "public"."search_logs" ("id", "search_query", "created_at") OVERRIDI
 --
 
 SELECT pg_catalog.setval('"auth"."refresh_tokens_id_seq"', 1, false);
-
-
---
--- Name: key_key_id_seq; Type: SEQUENCE SET; Schema: pgsodium; Owner: supabase_admin
---
-
-SELECT pg_catalog.setval('"pgsodium"."key_key_id_seq"', 1, false);
 
 
 --
