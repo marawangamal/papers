@@ -1,7 +1,7 @@
 // app/(public)/layout.tsx
 import SignInButton from "@/components/buttons/sign-in";
 import { ColorSchemeToggle } from "@/components/color-scheme-toggle";
-import { Anchor, Box, Container, Group, Stack, Text, ActionIcon } from "@mantine/core";
+import { Box, Container, Group, Stack, Text, ActionIcon } from "@mantine/core";
 import { IconPaperclip, IconBrandGithub } from "@tabler/icons-react";
 import Link from "next/link";
 
@@ -30,9 +30,14 @@ export default function PublicLayout({
               </Group>
             </Link>
             <Group>
-              <Anchor component={Link} href="/coverage" c="dimmed" size="sm">
-                Coverage
-              </Anchor>
+              <Link
+                href="/coverage"
+                style={{ textDecoration: "none" }}
+              >
+                <Text c="dimmed" size="sm">
+                  Coverage
+                </Text>
+              </Link>
               <ActionIcon
                 variant="subtle"
                 size="lg"

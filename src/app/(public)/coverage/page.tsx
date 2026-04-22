@@ -1,5 +1,5 @@
 import { getVenueCoverage } from "@/lib/actions/venues";
-import { Badge, Container, Group, Stack, Table, Text, Title } from "@mantine/core";
+import { Badge, Card, Container, Group, Stack, Text, Title } from "@mantine/core";
 
 export const revalidate = 300;
 
@@ -34,41 +34,32 @@ export default async function CoveragePage() {
           </Text>
         </Stack>
 
-        <Table striped highlightOnHover verticalSpacing="sm">
-          <Table.Thead>
-            <Table.Tr>
-              <Table.Th>Conference</Table.Th>
-              <Table.Th>Years available</Table.Th>
-              <Table.Th style={{ textAlign: "right" }}>Papers</Table.Th>
-            </Table.Tr>
-          </Table.Thead>
-          <Table.Tbody>
-            {venues.map((venue) => (
-              <Table.Tr key={venue.abbrev}>
-                <Table.Td>
+        <Stack gap="sm">
+          {venues.map((venue) => (
+            <Card key={venue.abbrev} withBorder radius="md" padding="md">
+              <Group justify="space-between" align="center" wrap="nowrap">
+                <Stack gap={2}>
                   <Text fw={600}>{venue.abbrev}</Text>
-                </Table.Td>
-                <Table.Td>
-                  <Group gap="xs">
-                    {venue.entries.map((entry) => (
-                      <Badge
-                        key={entry.year}
-                        variant="light"
-                        radius="sm"
-                        title={`${entry.paper_count.toLocaleString()} papers`}
-                      >
-                        {entry.year}
-                      </Badge>
-                    ))}
-                  </Group>
-                </Table.Td>
-                <Table.Td style={{ textAlign: "right" }}>
-                  <Text c="dimmed">{venue.total.toLocaleString()}</Text>
-                </Table.Td>
-              </Table.Tr>
-            ))}
-          </Table.Tbody>
-        </Table>
+                  <Text size="xs" c="dimmed">
+                    {venue.total.toLocaleString()} papers
+                  </Text>
+                </Stack>
+                <Group gap="xs" justify="flex-end">
+                  {venue.entries.map((entry) => (
+                    <Badge
+                      key={entry.year}
+                      variant="light"
+                      radius="sm"
+                      title={`${entry.paper_count.toLocaleString()} papers`}
+                    >
+                      {entry.year}
+                    </Badge>
+                  ))}
+                </Group>
+              </Group>
+            </Card>
+          ))}
+        </Stack>
       </Stack>
     </Container>
   );
