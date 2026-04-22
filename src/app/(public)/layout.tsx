@@ -1,8 +1,8 @@
 // app/(public)/layout.tsx
 import SignInButton from "@/components/buttons/sign-in";
 import { ColorSchemeToggle } from "@/components/color-scheme-toggle";
-import { Box, Container, Group, Stack, Text, ActionIcon } from "@mantine/core";
-import { IconPaperclip, IconBrandGithub } from "@tabler/icons-react";
+import { Box, Button, Container, Group, Stack, Text } from "@mantine/core";
+import { IconPaperclip } from "@tabler/icons-react";
 import Link from "next/link";
 
 export default function PublicLayout({
@@ -30,19 +30,28 @@ export default function PublicLayout({
               </Group>
             </Link>
             <Group>
-              <ActionIcon
+              <Button
+                component={Link}
+                href="/coverage"
                 variant="subtle"
-                size="lg"
+                color="gray"
+                size="sm"
+              >
+                Coverage
+              </Button>
+              <Button
                 component="a"
                 href="https://github.com/marawangamal/papers"
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label="GitHub Repository"
+                variant="subtle"
+                color="gray"
+                size="sm"
               >
-                <IconBrandGithub size={18} />
-              </ActionIcon>
-              <SignInButton />
+                GitHub
+              </Button>
               <ColorSchemeToggle />
+              <SignInButton />
             </Group>
           </Group>
         </Group>

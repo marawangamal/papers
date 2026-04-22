@@ -1,9 +1,8 @@
 "use client";
 import {
+  Button,
   useMantineColorScheme,
   useComputedColorScheme,
-  UnstyledButton,
-  useMantineTheme,
 } from "@mantine/core";
 import { IconSun, IconMoon } from "@tabler/icons-react";
 
@@ -13,38 +12,24 @@ export function ColorSchemeToggle() {
     getInitialValueInEffect: true,
   });
 
-  const theme = useMantineTheme();
+  const isLight = computedColorScheme === "light";
 
   return (
-    <UnstyledButton
-      onClick={() =>
-        setColorScheme(computedColorScheme === "light" ? "dark" : "light")
-      }
-      variant="default"
+    <Button
+      onClick={() => setColorScheme(isLight ? "dark" : "light")}
+      variant="subtle"
+      color="gray"
+      size="sm"
       aria-label="Toggle color scheme"
-      style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
+      leftSection={
+        isLight ? (
+          <IconMoon size={16} stroke={1.5} />
+        ) : (
+          <IconSun size={16} stroke={1.5} />
+        )
+      }
     >
-      {computedColorScheme === "light" ? (
-        <IconMoon
-          size={20}
-          stroke={1.5}
-          style={{
-            color: theme.colors.gray[7],
-          }}
-        />
-      ) : (
-        <IconSun
-          size={20}
-          stroke={1.5}
-          style={{
-            color: theme.colors.dark[0],
-          }}
-        />
-      )}
-    </UnstyledButton>
+      {isLight ? "Dark" : "Light"}
+    </Button>
   );
 }

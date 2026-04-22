@@ -2,8 +2,9 @@ import { ActionIcon, Anchor, Group, Container } from "@mantine/core";
 import { IconBrandTwitter, IconBrandYoutube } from "@tabler/icons-react";
 
 const links = [
-  { link: "/legal/privacy.html", label: "Privacy" },
-  { link: "/legal/terms.html", label: "Terms" },
+  { link: "/coverage", label: "Coverage", external: false },
+  { link: "/legal/privacy.html", label: "Privacy", external: true },
+  { link: "/legal/terms.html", label: "Terms", external: true },
 ];
 
 export default function Footer() {
@@ -17,8 +18,8 @@ export default function Footer() {
               href={link.link}
               c="dimmed"
               size="sm"
-              target="_blank"
-              rel="noopener noreferrer"
+              target={link.external ? "_blank" : undefined}
+              rel={link.external ? "noopener noreferrer" : undefined}
             >
               {link.label}
             </Anchor>
