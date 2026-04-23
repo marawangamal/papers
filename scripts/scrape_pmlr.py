@@ -33,6 +33,21 @@ class Scraper(ConferenceScraper):
     def _get_base_url(self, volume: int) -> str:
         return f"https://proceedings.mlr.press/v{volume}/assets/bib/bibliography.bib"
 
+    def _get_volume(self, year: int) -> Optional[int]:
+        """Look up the PMLR volume number for (self.conf, year) from the index page."""
+        if not hasattr(self, "_index"):
+            html = requests.get("https://proceedings.mlr.press/").text
+            # Each listed volume line looks like:
+            # <li><a href="v258"><b>Volume 258</b></a> Proceedings of AISTATS 2025</li>
+            self._index = {
+                (abbrev, int(yr)): int(vol)
+                for vol, abbrev, yr in re.findall(
+                    r'href="v(\d+)".*?Proceedings of (\w+)\s+(\d{4})',
+                    html,
+                )
+            }
+        return self._index.get((self.conf, year))
+
     def _get_venue(self, entries: list) -> Optional[Dict]:
         """Resolve (title, abbrev, year) from the BibTeX entries of a volume."""
         proc = next((e for e in entries if e.get("ENTRYTYPE") == "proceedings"), None)
@@ -56,23 +71,26 @@ class Scraper(ConferenceScraper):
         return url
 
     # NOTE: this is the only method that needs to be defined according to the base class.
-    # For PMLR, `year` is a PMLR volume number, not a calendar year.
     def scrape_year(self, year: int):
-        """Scrape all papers for a given PMLR volume."""
-        print(f"Scraping v{year}...")
-        url = self._get_base_url(year)
+        """Scrape all papers for a given calendar year of self.conf."""
+        print(f"Scraping {self.conf} {year}...")
+        volume = self._get_volume(year)
+        if volume is None:
+            print(f"Skipping {self.conf} {year}: no PMLR volume found")
+            return
+
         parser = BibTexParser(common_strings=True)
         parser.customization = convert_to_unicode
-        db = bibtexparser.loads(requests.get(url).text, parser=parser)
+        db = bibtexparser.loads(requests.get(self._get_base_url(volume)).text, parser=parser)
 
         venue = self._get_venue(db.entries)
         if not venue:
-            print(f"Skipping v{year}: not {self.conf}")
+            print(f"Skipping v{volume}: not {self.conf}")
             return
 
         papers = [e for e in db.entries if e.get("ENTRYTYPE") == "inproceedings"]
         self.save_venue(venue)
-        with tqdm(total=len(papers), desc=f"Volume {year}", unit="paper") as pbar:
+        with tqdm(total=len(papers), desc=f"{self.conf} {year}", unit="paper") as pbar:
             for paper in papers:
                 try:
                     paper_data = {
@@ -99,13 +117,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--conf", required=True)
-    parser.add_argument(
-        "--years",
-        required=True,
-        nargs="+",
-        type=int,
-        help="PMLR volume numbers (NOT calendar years). e.g. 238 = AISTATS 2024.",
-    )
+    parser.add_argument("--years", required=True, nargs="+", type=int)
     args = parser.parse_args()
 
     scraper = Scraper(conf=args.conf, output_dir=f"dumps/{args.conf.lower()}")
