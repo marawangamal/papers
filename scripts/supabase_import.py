@@ -1,3 +1,4 @@
+import argparse
 import csv
 from pathlib import Path
 from typing import List, Dict
@@ -169,12 +170,24 @@ class SupabaseImporter:
 
 
 if __name__ == "__main__":
-    # Get path relative to the script location
-    script_dir = Path(__file__).parent
-    root_dir = script_dir.parent
+    parser = argparse.ArgumentParser(
+        description="Import a conference dump (venues.csv + papers.csv) into Supabase."
+    )
+    parser.add_argument(
+        "--path",
+        required=True,
+        type=Path,
+        help="Path to the dump directory containing venues.csv and papers.csv "
+        "(e.g. dumps/iclr).",
+    )
+    args = parser.parse_args()
 
-    venues_path = root_dir / "dumps/iclr/venues.csv"
-    papers_path = root_dir / "dumps/iclr/papers.csv"
+    dump_dir: Path = args.path
+    if not dump_dir.is_dir():
+        raise NotADirectoryError(f"Dump path is not a directory: {dump_dir}")
 
-    importer = SupabaseImporter(venues_path=venues_path, papers_path=papers_path)
+    importer = SupabaseImporter(
+        venues_path=dump_dir / "venues.csv",
+        papers_path=dump_dir / "papers.csv",
+    )
     importer.import_all()

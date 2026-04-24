@@ -14,10 +14,10 @@
 
 ## Supported conferences
 
-- [x] NeurIPS
-- [x] ICML
-- [x] PMLR (AISTATS, COLT, CoRL,ICGI)
-- [x] ICLR
+- [x] NeurIPS ([scraper](scripts/scrape_miniconf.py))
+- [x] ICML ([scraper](scripts/scrape_miniconf.py))
+- [x] ICLR ([scraper](scripts/scrape_miniconf.py))
+- [x] AISTATS, COLT, CoRL, ICGI, PGM ([scraper](scripts/scrape_pmlr.py))
 
 ## Features
 

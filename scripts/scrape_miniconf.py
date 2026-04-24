@@ -101,10 +101,11 @@ class MiniconfPaper:
 class Scraper(ConferenceScraper):
     def __init__(self, conf: str, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.conf = conf
-        # NOTE: this scraper only works for ICML, NeurIPS, and ICLR. To add support for other conferences, 
+        # NOTE: this scraper only works for ICML, NeurIPS, and ICLR. To add support for other conferences,
         # inherit from the base class and override the `scrape_year` method.
-        assert conf.lower() in ['icml', 'neurips', 'iclr'], f"This scraper only works for ICML, NeurIPS, and ICLR"
+        canonical = {k.lower(): k for k in abbrev2venueMap}
+        assert conf.lower() in canonical, f"This scraper only works for ICML, NeurIPS, and ICLR"
+        self.conf = canonical[conf.lower()]
 
     def _get_base_url(self, conf: str, year: int) -> str:
         conf = conf.lower()
@@ -169,7 +170,12 @@ class Scraper(ConferenceScraper):
 
 # Usage example
 if __name__ == "__main__":
-    # Scrape ICML papers
-    for year in range(2025, 2026):
-        scraper = Scraper(conf="ICML", output_dir=f"dumps/icml-{year}")
-        scraper.scrape_year(year)
+    import argparse
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--conf", required=True)
+    parser.add_argument("--years", required=True, nargs="+", type=int)
+    args = parser.parse_args()
+
+    scraper = Scraper(conf=args.conf, output_dir=f"dumps/{args.conf.lower()}")
+    scraper.scrape_multiple_years(args.years)
