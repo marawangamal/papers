@@ -1,0 +1,67 @@
+# Papers
+
+> Semantic search over machine-learning conference papers (NeurIPS, ICML, ICLR, PMLR and
+> others). Papers exposes a small read-only JSON API intended for agents and scripts.
+> No authentication or API key is required.
+
+Search is embedding-based: your query string is embedded with a `gte-small` model and
+matched against paper abstracts by pgvector cosine similarity (threshold 0.8). Prefer
+natural-language topical queries ("sparse attention for long context") over keyword
+strings ("sparse AND attention") — the latter will match poorly.
+
+Base URL: `https://papers.app`
+
+## Endpoints
+
+- [GET /api/papers](https://papers.app/api/papers): Search or browse papers. Query params:
+  `search` (natural-language query; omit to browse), `page` (1-based, 50 results per page),
+  `venue` (venue abbreviation, repeat the param for multiple), `year_min`, `year_max`,
+  `has_code` (pass the literal string `true`).
+  Returns `{ "success": true, "count": <int>, "results": [<paper>, ...] }`.
+- [GET /api/venues](https://papers.app/api/venues): List indexed venue abbreviations, for
+  use as `venue` filter values. Returns `{ "success": true, "count": <int>, "venues": [{ "abbrev": "NeurIPS" }, ...] }`.
+- [OpenAPI 3.1 specification](https://papers.app/openapi.json): Machine-readable schema for both endpoints.
+- [Human documentation](https://papers.app/docs): Same reference with worked examples.
+- [Coverage](https://papers.app/coverage): Which conferences and years are actually indexed.
+
+## Paper fields
+
+Each entry in `results` contains: `id`, `title`, `authors` (array of strings), `abstract`,
+`year`, `abbrev` (venue), `pdf_url`, `code_url`, `arxiv_id`, `arxiv_url`, `like_count`,
+`view_count`, `created_at`.
+
+Responses may also contain additional internal fields — notably `abstract_embedding`, a
+large raw vector — which are **not** part of the stable contract. Ignore any field not
+listed above; do not parse or depend on them.
+
+## Examples
+
+```
+curl "https://papers.app/api/papers?search=sparse+attention+for+long+context"
+curl "https://papers.app/api/papers?search=diffusion+models&venue=NeurIPS&year_min=2023&has_code=true"
+curl "https://papers.app/api/papers?venue=ICML&year_min=2024&page=2"
+curl "https://papers.app/api/venues"
+```
+
+## Behaviour worth knowing
+
+- `count` is the number of results **on the current page**, not the total number of
+  matches. There is no total-count field. Infer the last page from `count` < 50.
+- Without `search`, result ordering is unspecified. Do not rely on it being sorted by
+  date or relevance. Pass `search` when you need ranked results.
+- `has_code` only activates on the exact string `true`. Any other value is treated as false.
+- Non-numeric `year_min` / `year_max` currently return HTTP 500 rather than 400.
+- Errors return `{ "success": false, "error": "<message>" }`.
+- Responses are cached for 300 seconds (`s-maxage=300, stale-while-revalidate=60`).
+
+## Usage expectations
+
+Each distinct `search` string costs an embedding computation and a vector scan, so it is
+not free to serve. There is currently no enforced rate limit; please stay under roughly
+20 search requests per minute, reuse identical query strings rather than perturbing them,
+and request only the pages you need. Rate limiting will be introduced, at which point
+exceeding it will return HTTP 429 with a `Retry-After` header — handle that status now if
+you are writing a long-running client.
+
+Paper metadata is scraped from public conference proceedings. Abstracts remain the
+copyright of their original authors and publishers.
