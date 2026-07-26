@@ -39,7 +39,7 @@ class MiniconfPaper:
     id: int
     uid: str
     name: str
-    abstract: str
+    abstract: Optional[str] = None  # dropped from the ICML 2026 feed; see abstracts sidecar
 
     # ─── rich content & authorship ───────────────────────────────────────────────
     authors: List[Dict[str, Any]] = field(default_factory=list)
@@ -111,6 +111,19 @@ class Scraper(ConferenceScraper):
         conf = conf.lower()
         return f"https://{conf}.cc/static/virtual/data/{conf}-{year}-orals-posters.json"
 
+    def _get_abstracts_url(self, conf: str, year: int) -> str:
+        conf = conf.lower()
+        return f"https://{conf}.cc/static/virtual/data/{conf}-{year}-abstracts.json"
+
+    def _fetch_abstracts(self, conf: str, year: int) -> Dict[str, str]:
+        """Newer feeds (e.g. ICML 2026) omit abstracts from the orals-posters
+        feed and expose them in a sidecar file keyed by event id. Returns an
+        empty map when the sidecar is absent (older years embed abstracts)."""
+        resp = self.session.get(self._get_abstracts_url(conf, year))
+        if resp.status_code != 200 or "json" not in resp.headers.get("content-type", ""):
+            return {}
+        return {str(k): v for k, v in resp.json().items()}
+
     def _get_venue(self, year: int) -> Dict:
         """Get venue information"""
         current_year = datetime.now().year
@@ -142,6 +155,7 @@ class Scraper(ConferenceScraper):
         url = self._get_base_url(self.conf, year)
         response = requests.get(url).json()
         papers = response["results"]
+        abstracts = self._fetch_abstracts(self.conf, year)
 
         venue = self._get_venue(year)
         self.save_venue(venue)
@@ -153,7 +167,7 @@ class Scraper(ConferenceScraper):
                     paper_data = {
                         "title": paper_.name,
                         "authors": [author["fullname"] for author in paper_.authors],
-                        "abstract": paper_.abstract,
+                        "abstract": paper_.abstract or abstracts.get(str(paper_.id)),
                         "pdf_url": paper_.paper_url.replace("/forum?", "/pdf?") if paper_.paper_url else None,
                         "code_url": self._to_code_url(paper_.url, paper_.abstract),
                         # venue
