@@ -45,3 +45,4 @@ next-env.d.ts
 neurips_data
 __pycache__
 *.pyc
+dumps
